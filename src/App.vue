@@ -3,12 +3,25 @@
     <div class="app-background"></div>
     <header class="topbar">
       <div class="brand-block">
-        <span class="brand-kicker">Parking Guide</span>
-        <h1>لوحة إدارة المواقف</h1>
+        <div class="brand-sign">
+          <span class="sign-border"></span>
+          <span class="sign-content">P</span>
+          <span class="sign-border"></span>
+        </div>
+        <div class="brand-text">
+          <span class="brand-kicker">Parking Guide</span>
+          <h1>لوحة إدارة المواقف</h1>
+        </div>
       </div>
       <nav class="nav-links" aria-label="Main navigation">
-        <router-link to="/">الرئيسية</router-link>
-        <router-link to="/about">حول المشروع</router-link>
+        <router-link to="/">
+          <span class="nav-icon">🏠</span>
+          الرئيسية
+        </router-link>
+        <router-link to="/about">
+          <span class="nav-icon">ℹ️</span>
+          حول المشروع
+        </router-link>
       </nav>
     </header>
     <main class="page-content">
@@ -19,22 +32,44 @@
 
 <style lang="scss">
 :root {
-  color-scheme: light;
+  color-scheme: dark;
+
+  --asphalt-dark: #0f0f1a;
+  --asphalt-base: #1a1a2e;
+  --asphalt-light: #16213e;
+  --asphalt-lighter: #252547;
+
+  --road-white: #f1f5f9;
+  --road-yellow: #fbbf24;
+
+  --spot-free: #22c55e;
+  --spot-occupied: #ef4444;
+  --spot-free-bg: #166534;
+  --spot-occupied-bg: #991b1b;
+
+  --accent-orange: #f59e0b;
+  --accent-glow: rgba(245, 158, 11, 0.3);
+  --accent-teal: #14b8a6;
+
+  --glass-bg: rgba(26, 26, 46, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.08);
 }
 
 * {
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
+  direction: rtl;
   min-width: 320px;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background:
-    radial-gradient(circle at top left, rgba(15, 118, 110, 0.18), transparent 28%),
-    radial-gradient(circle at top right, rgba(245, 158, 11, 0.16), transparent 30%),
-    linear-gradient(180deg, #f7fafc 0%, #edf4f7 100%);
-  color: #163042;
+  font-family: "Tajawal", "Segoe UI", Tahoma, sans-serif;
+  background: var(--asphalt-dark);
+  color: var(--road-white);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -43,12 +78,23 @@ body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.45) 1px, transparent 1px);
-  background-size: 36px 36px;
-  opacity: 0.3;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 80px,
+      rgba(255, 255, 255, 0.015) 80px,
+      rgba(255, 255, 255, 0.015) 81px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 80px,
+      rgba(255, 255, 255, 0.015) 80px,
+      rgba(255, 255, 255, 0.015) 81px
+    );
   pointer-events: none;
+  z-index: 0;
 }
 
 a {
@@ -59,16 +105,26 @@ a {
 #app-shell {
   position: relative;
   min-height: 100vh;
-  padding: 24px;
+  padding: 20px;
 }
 
 .app-background {
-  position: absolute;
+  position: fixed;
   inset: 0;
   background:
-    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.8), transparent 34%),
-    radial-gradient(circle at 80% 0%, rgba(255, 255, 255, 0.55), transparent 26%);
+    radial-gradient(
+      ellipse at 20% 0%,
+      rgba(99, 102, 241, 0.08),
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 80% 100%,
+      rgba(245, 158, 11, 0.06),
+      transparent 50%
+    ),
+    var(--asphalt-dark);
   pointer-events: none;
+  z-index: 0;
 }
 
 .topbar,
@@ -78,91 +134,237 @@ a {
 }
 
 .topbar {
-  max-width: 1280px;
+  max-width: 1400px;
   margin: 0 auto 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 20px 24px;
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(16px);
-  box-shadow: 0 16px 45px rgba(15, 23, 42, 0.08);
+  gap: 20px;
+  padding: 16px 24px;
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .brand-block {
   display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.brand-sign {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, var(--accent-orange), #d97706);
+  border-radius: 12px;
+  box-shadow:
+    0 4px 16px var(--accent-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.brand-sign::before,
+.brand-sign::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 3px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  animation: rotate-sign 20s linear infinite;
+}
+
+.brand-sign::after {
+  width: 120%;
+  height: 120%;
+  border-color: rgba(245, 158, 11, 0.2);
+  animation-direction: reverse;
+}
+
+@keyframes rotate-sign {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sign-content {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.brand-text {
+  display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
+  gap: 2px;
 }
 
 .brand-kicker {
-  font-size: 0.78rem;
-  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #0f766e;
+  color: var(--accent-orange);
   font-weight: 700;
 }
 
 .brand-block h1 {
   margin: 0;
-  font-size: clamp(1.45rem, 2vw, 2.2rem);
-  color: #102a43;
+  font-size: clamp(1.2rem, 2vw, 1.6rem);
+  font-weight: 800;
+  color: var(--road-white);
 }
 
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .nav-links a {
-  padding: 10px 16px;
-  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 12px;
   font-weight: 700;
-  color: #486581;
-  transition:
-    background-color 160ms ease,
-    color 160ms ease,
-    transform 160ms ease,
-    box-shadow 160ms ease;
+  font-size: 0.95rem;
+  color: rgba(241, 245, 249, 0.7);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid transparent;
+  transition: all 200ms ease;
+}
+
+.nav-icon {
+  font-size: 1rem;
 }
 
 .nav-links a:hover {
-  color: #102a43;
-  background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-  transform: translateY(-1px);
+  color: var(--road-white);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
 }
 
 .nav-links a.router-link-exact-active {
-  color: #ffffff;
-  background: linear-gradient(135deg, #0f766e, #0ea5a4);
-  box-shadow: 0 14px 28px rgba(15, 118, 110, 0.25);
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent-orange), #d97706);
+  border-color: transparent;
+  box-shadow: 0 4px 20px var(--accent-glow);
 }
 
 .page-content {
-  max-width: 1280px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
 @media (max-width: 768px) {
+  .topbar {
+    padding: 14px 18px;
+    border-radius: 16px;
+    gap: 16px;
+  }
+
+  .brand-sign {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+  }
+
+  .sign-content {
+    font-size: 1.5rem;
+  }
+
+  .brand-block h1 {
+    font-size: 1.1rem;
+  }
+
+  .nav-links a {
+    padding: 9px 14px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
   #app-shell {
-    padding: 16px;
+    padding: 10px;
   }
 
   .topbar {
-    padding: 18px;
     flex-direction: column;
-    align-items: stretch;
+    gap: 14px;
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .brand-block {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .brand-sign {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+  }
+
+  .sign-content {
+    font-size: 1.4rem;
+  }
+
+  .brand-kicker {
+    font-size: 0.65rem;
+  }
+
+  .brand-block h1 {
+    font-size: 1rem;
   }
 
   .nav-links {
+    width: 100%;
     justify-content: center;
+    gap: 6px;
+  }
+
+  .nav-links a {
+    flex: 1;
+    justify-content: center;
+    padding: 12px 10px;
+    font-size: 0.85rem;
+    border-radius: 10px;
+  }
+
+  .nav-icon {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .topbar {
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .brand-sign {
+    width: 38px;
+    height: 38px;
+  }
+
+  .sign-content {
+    font-size: 1.2rem;
+  }
+
+  .nav-links a {
+    padding: 10px 8px;
+    font-size: 0.8rem;
   }
 }
 </style>
