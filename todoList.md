@@ -14,7 +14,6 @@
 ### **1️⃣ ParkingSpot.vue** - **أولاً**
 
 ```
-
 ✅ Props: spotId, status, position, size
 ✅ Hover tooltip "مشغولة/فاضية"
 ✅ Click emit مع position
@@ -169,4 +168,111 @@
 
 ```
 
+```
+# 🎯 **برومت كامل لـ VS Code AI - مسار 90° + تصميم طبقات**
+
+## 📝 **انسخ هذا في Continue.dev / Copilot Chat / Cursor:**
+
+```
+🚨 **مشروع Parking Map - تعليمات إجبارية جديدة**
+
+## 🎨 **التصميم النهائي 100%**:
+```
+┌──────────────────────────────┐ ← **دور 1** (أعلى الشاشة)
+│  **قاطع A** ← 5 spots (A1-A5) │
+│                              │
+│ ──────────────────────────   │ ← ممر مركزي عمودي
+│                              │
+│  **قاطع B** ← 5 spots (B1-B5)│
+└──────────────────────────────┘
+
+┌──────────────────────────────┐ ← **دور 2** (أسفل الشاشة)
+│  **قاطع C** ← 5 spots (C1-C5)│
+│                              │
+│ ──────────────────────────   │ ← نفس الممر مستمر
+│                              │
+│              (فاضي يمين)     │
+└──────────────────────────────┘
+```
+
+## 🔄 **المسار الجديد - منعطفات 90° حادة**:
+```
+1. من بداية الممر (x=50%, y=0%)
+2. خط عمودي لمستوى الـ spot (y=spot.y)
+3. منعطف **90° حاد** ➜ أفقي لـ spot.x
+   ├─ Spot في A (يسار) ➜ ينعطف **يمين**
+   └─ Spot في B/C (يمين) ➜ ينعطف **يسار**
+```
+
+**SVG Path مثال**:
+```
+d="M250,0 V175 H125"  // عمودي ثم أفقي 90°
+```
+
+## 📂 **هيكل المشروع**:
+```
+src/components/
+├── 1-ParkingSpot.vue     (15 spot مستقلة)
+├── 2-Floor.vue          (10 spots دور1)
+├── 3-SecondFloor.vue    (5 spots دور2) 
+├── 4-PathDrawer.vue     (SVG مسار 90°)
+└── 5-ParkingLayout.vue  (أعلى:دور1 | أسفل:دور2)
+```
+
+## 🎯 **التفاعلات المطلوبة**:
+```
+Hover Spot ➜ tooltip "مشغولة"/"فاضية"
+Click Spot ➜ مسار 90° أصفر منقط من الممر
+Auto-clear: 5 ثواني أو click جديد
+```
+
+## ⚙️ **المواصفات التقنية**:
+
+```
+إحداثيات:
+├── ممر start: { x: 50, y: 0 } ثابت
+├── A spots: x=15-35%, y=20-80%
+├── B spots: x=65-85%, y=20-80%
+├── C spots: x=15-35%, y=20-80% (دور2)
+
+مسار SVG:
+├── stroke="#eab308" stroke-width="4"
+├── stroke-dasharray="10 5"
+├── stroke-linecap="round" opacity="0.8"
+
+Layout:
+├── flex flex-col gap-8
+├── دور1: mt-0 (أعلى)
+└── دور2: mb-0 (أسفل)
+```
+
+## 🛠️ **أوامر التحكم الجاهزة**:
+
+```
+🚀 "اكتب 1-ParkingSpot.vue كامل 15 spot مع:
+   props spotId='A1', status, position{x:25,y:35}
+   hover tooltip أسود، click emit position"
+
+🚀 "اعمل 2-Floor.vue دور1 مع 10 spots A1-A5 B1-B5
+   v-for + activePath ref + مسار 90° logic"
+
+🚀 "اكتب 3-SecondFloor.vue دور2 C1-C5 spots فقط"
+
+🚀 "ارسم 4-PathDrawer.vue SVG مع:
+   path 90°: M50,0 V${spotY} H${spotX}
+   أصفر منقط stroke-width=4"
+
+🚀 "اجمع 5-ParkingLayout.vue:
+   <Floor1 class='mt-0'/> فوق
+   <Floor2 class='mb-0'/> تحت"
+```
+
+## ✅ **قواعد VS Code AI**:
+```
+1. TailwindCSS فقط - لا CSS عادي
+2. Vue 3 Composition API ref()
+3. Position نسبي 0-100% ➜ pixels via getBoundingClientRect()
+4. مسار 90° حاد - **لا منحنيات**
+5. Auto setTimeout(5000) clear
+6. Responsive mobile-first
 ```
