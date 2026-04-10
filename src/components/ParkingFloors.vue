@@ -29,7 +29,7 @@
               </p>
             </div>
           </div>
-          <Floor
+          <ParkingFloor
             :floor="2"
             :spots-prop="floor2Spots"
             :aisle-x-percent="aisleXPercent"
@@ -112,7 +112,7 @@
             </div>
           </div>
           <div class="route-origin-anchor" aria-hidden="true"></div>
-          <Floor
+          <ParkingFloor
             :floor="1"
             :spots-prop="floor1Spots"
             :aisle-x-percent="aisleXPercent"
@@ -124,8 +124,9 @@
   </div>
 </template>
 
-<script>
-import Floor from "@/components/Floor.vue";
+<script setup>
+import { ref, reactive, onMounted, onUnmounted, nextTick } from "vue";
+import ParkingFloor from "@/components/ParkingFloor.vue";
 import PathDrawer from "@/components/PathDrawer.vue";
 
 function randomStatus() {
@@ -136,176 +137,184 @@ function buildYPositions(count) {
   return Array.from(
     { length: count },
     (_, idx) => ((idx + 1) / (count + 1)) * 100,
-  );
+  ).reverse();
 }
 
-export default {
-  name: "ParkingFloors",
-  components: { Floor, PathDrawer },
-  data() {
-    const spotCount = 5;
-    const yPositions = buildYPositions(spotCount).slice().reverse();
+const aisleXPercent = 50;
 
-    const floor1Spots = [];
-    yPositions.forEach((y, idx) => {
-      floor1Spots.push({
-        id: `A${idx + 1}`,
-        x: 75,
-        y,
-        section: "A",
-        status: randomStatus(),
-        size: { width: 130, height: 75 },
-      });
-    });
-    yPositions.forEach((y, idx) => {
-      floor1Spots.push({
-        id: `B${idx + 1}`,
-        x: 25,
-        y,
-        section: "B",
-        status: randomStatus(),
-        size: { width: 130, height: 75 },
-      });
-    });
+const spotCount = 5;
+const yPositions = buildYPositions(spotCount);
 
-    const floor2Spots = [];
-    yPositions.forEach((y, idx) => {
-      floor2Spots.push({
-        id: `C${idx + 1}`,
-        x: 75,
-        y,
-        section: "C",
-        status: randomStatus(),
-        size: { width: 130, height: 75 },
-      });
-    });
+const floor1Spots = reactive([]);
+const floor2Spots = reactive([]);
 
-    return {
-      aisleXPercent: 50,
-      floor1Spots,
-      floor2Spots,
-      containerSize: { width: 0, height: 0 },
-      activePath: null,
-      clearTimer: null,
-      resizeObserver: null,
-      rampRect: null,
-      currentSpotSize: { width: 130, height: 75 },
-    };
-  },
-  mounted() {
-    this.$nextTick(() => {
-      const el = this.$refs.container;
-      if (el && window.ResizeObserver) {
-        this.resizeObserver = new ResizeObserver(() =>
-          this.updateContainerSize(),
-        );
-        this.resizeObserver.observe(el);
-      }
-      this.updateContainerSize();
-      this.updateRampRect();
-      this.updateSpotSizes();
-    });
-    window.addEventListener("resize", () => {
-      this.updateContainerSize();
-      this.updateSpotSizes();
-    });
-  },
-  beforeUnmount() {
-    window.removeEventListener("resize", this.updateContainerSize.bind(this));
-    if (this.resizeObserver) {
-      this.resizeObserver.disconnect();
-      this.resizeObserver = null;
+yPositions.forEach((y, idx) => {
+  floor1Spots.push({
+    id: `A${idx + 1}`,
+    x: 75,
+    y,
+    section: "A",
+    status: randomStatus(),
+    size: { width: 130, height: 75 },
+  });
+});
+
+yPositions.forEach((y, idx) => {
+  floor1Spots.push({
+    id: `B${idx + 1}`,
+    x: 25,
+    y,
+    section: "B",
+    status: randomStatus(),
+    size: { width: 130, height: 75 },
+  });
+});
+
+yPositions.forEach((y, idx) => {
+  floor2Spots.push({
+    id: `C${idx + 1}`,
+    x: 75,
+    y,
+    section: "C",
+    status: randomStatus(),
+    size: { width: 130, height: 75 },
+  });
+});
+
+const container = ref(null);
+const rampConnector = ref(null);
+const firstFloorBox = ref(null);
+
+const containerSize = ref({ width: 0, height: 0 });
+const activePath = ref(null);
+const rampRect = ref(null);
+const clearTimer = ref(null);
+const resizeObserver = ref(null);
+const currentSpotSize = reactive({ width: 130, height: 75 });
+
+function updateContainerSize() {
+  nextTick(() => {
+    const el = container.value;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    containerSize.value = { width: rect.width, height: rect.height };
+  });
+}
+
+function updateSpotSizes() {
+  const width = window.innerWidth;
+  if (width < 360) {
+    currentSpotSize.width = "100%";
+    currentSpotSize.height = 50;
+  } else if (width < 480) {
+    currentSpotSize.width = 90;
+    currentSpotSize.height = 55;
+  } else if (width < 768) {
+    currentSpotSize.width = 110;
+    currentSpotSize.height = 65;
+  } else {
+    currentSpotSize.width = 130;
+    currentSpotSize.height = 75;
+  }
+  applySpotSizes();
+}
+
+function applySpotSizes() {
+  const size = { ...currentSpotSize };
+  floor1Spots.forEach((spot) => {
+    spot.size = { ...size };
+  });
+  floor2Spots.forEach((spot) => {
+    spot.size = { ...size };
+  });
+}
+
+function updateRampRect() {
+  nextTick(() => {
+    const ramp = rampConnector.value;
+    if (ramp) {
+      rampRect.value = ramp.getBoundingClientRect();
     }
-    if (this.clearTimer) clearTimeout(this.clearTimer);
-  },
-  methods: {
-    updateContainerSize() {
-      this.$nextTick(() => {
-        const el = this.$refs.container;
-        if (!el) return;
-        const rect = el.getBoundingClientRect();
-        this.containerSize = { width: rect.width, height: rect.height };
+  });
+}
+
+function handleRequestPath(payload) {
+  if (!containerSize.value.width || !containerSize.value.height) {
+    updateContainerSize();
+  }
+
+  const containerRect = container.value?.getBoundingClientRect();
+  const floorRectData = firstFloorBox.value?.getBoundingClientRect();
+  updateRampRect();
+
+  if (
+    !containerRect ||
+    !floorRectData ||
+    !payload.floorRect ||
+    !payload.spotCenter
+  ) {
+    return;
+  }
+
+  const end = {
+    x: payload.floorRect.left - containerRect.left + payload.spotCenter.x,
+    y: payload.floorRect.top - containerRect.top + payload.spotCenter.y,
+  };
+
+  const start = {
+    x:
+      floorRectData.left -
+      containerRect.left +
+      (aisleXPercent / 100) * floorRectData.width,
+    y: floorRectData.bottom - containerRect.top - 18,
+  };
+
+  const targetFloor = payload.floor;
+
+  activePath.value = {
+    start,
+    end,
+    aisleXPercent: payload.aisleXPercent,
+    targetFloor,
+    rampRect: rampRect.value,
+    containerRect,
+  };
+
+  if (clearTimer.value) clearTimeout(clearTimer.value);
+  clearTimer.value = setTimeout(() => {
+    activePath.value = null;
+    clearTimer.value = null;
+  }, 5000);
+}
+
+onMounted(() => {
+  nextTick(() => {
+    const el = container.value;
+    if (el && window.ResizeObserver) {
+      resizeObserver.value = new ResizeObserver(() => {
+        updateContainerSize();
       });
-    },
-    updateSpotSizes() {
-      const width = window.innerWidth;
-      if (width < 360) {
-        this.currentSpotSize = { width: "100%", height: 50, maxWidth: 200 };
-      } else if (width < 480) {
-        this.currentSpotSize = { width: 90, height: 55 };
-      } else if (width < 768) {
-        this.currentSpotSize = { width: 110, height: 65 };
-      } else {
-        this.currentSpotSize = { width: 130, height: 75 };
-      }
-      this.applySpotSizes();
-    },
-    applySpotSizes() {
-      const size = this.currentSpotSize;
-      this.floor1Spots.forEach((spot) => {
-        spot.size = { ...size };
-      });
-      this.floor2Spots.forEach((spot) => {
-        spot.size = { ...size };
-      });
-    },
-    updateRampRect() {
-      this.$nextTick(() => {
-        const ramp = this.$refs.rampConnector;
-        if (ramp) {
-          this.rampRect = ramp.getBoundingClientRect();
-        }
-      });
-    },
-    handleRequestPath(payload) {
-      if (!this.containerSize.width || !this.containerSize.height) {
-        this.updateContainerSize();
-      }
+      resizeObserver.value.observe(el);
+    }
+    updateContainerSize();
+    updateRampRect();
+    updateSpotSizes();
+  });
 
-      const containerRect = this.$refs.container?.getBoundingClientRect();
-      const firstFloorRect = this.$refs.firstFloorBox?.getBoundingClientRect();
-      this.updateRampRect();
+  window.addEventListener("resize", () => {
+    updateContainerSize();
+    updateSpotSizes();
+  });
+});
 
-      if (
-        !containerRect ||
-        !firstFloorRect ||
-        !payload.floorRect ||
-        !payload.spotCenter
-      ) {
-        return;
-      }
-
-      const floorRect = payload.floorRect;
-      const end = {
-        x: floorRect.left - containerRect.left + payload.spotCenter.x,
-        y: floorRect.top - containerRect.top + payload.spotCenter.y,
-      };
-      const start = {
-        x:
-          firstFloorRect.left -
-          containerRect.left +
-          (this.aisleXPercent / 100) * firstFloorRect.width,
-        y: firstFloorRect.bottom - containerRect.top - 18,
-      };
-
-      const targetFloor = payload.floor;
-
-      this.activePath = {
-        start,
-        end,
-        aisleXPercent: payload.aisleXPercent,
-        targetFloor,
-        rampRect: this.rampRect,
-        containerRect,
-      };
-      if (this.clearTimer) clearTimeout(this.clearTimer);
-      this.clearTimer = setTimeout(() => {
-        this.activePath = null;
-        this.clearTimer = null;
-      }, 5000);
-    },
-  },
-};
+onUnmounted(() => {
+  window.removeEventListener("resize", updateContainerSize);
+  if (resizeObserver.value) {
+    resizeObserver.value.disconnect();
+    resizeObserver.value = null;
+  }
+  if (clearTimer.value) clearTimeout(clearTimer.value);
+});
 </script>
 
 <style scoped>
@@ -871,7 +880,7 @@ export default {
   }
 
   .ramp-wrapper {
-    width: 200px;
+    width: min(200px, 85vw);
     height: 44px;
   }
 
@@ -899,6 +908,84 @@ export default {
 
   .floor-level {
     font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .parking-shell {
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .section-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+  }
+
+  .section-heading h3 {
+    font-size: 1rem;
+  }
+
+  .section-heading p {
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+
+  .floor-box {
+    border-radius: 14px;
+  }
+
+  .floor-header {
+    padding: 10px 10px 8px;
+    gap: 10px;
+  }
+
+  .floor-sign {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+  }
+
+  .floor-level {
+    font-size: 1rem;
+  }
+
+  .floor-title {
+    font-size: 0.9rem;
+  }
+
+  .floor-subtitle {
+    font-size: 0.75rem;
+  }
+
+  .route-origin-pill {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+  }
+
+  .ramp-wrapper {
+    width: min(180px, 85vw);
+    height: 40px;
+  }
+
+  .ramp-connector {
+    height: 55px;
+  }
+
+  .sign-badge {
+    width: 24px;
+    height: 24px;
+  }
+
+  .sign-level {
+    font-size: 0.9rem;
+  }
+
+  .sign-text {
+    font-size: 0.55rem;
   }
 }
 </style>

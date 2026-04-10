@@ -66,12 +66,15 @@ html {
 body {
   margin: 0;
   direction: rtl;
-  min-width: 320px;
+  min-width: 360px;
   font-family: "Tajawal", "Segoe UI", Tahoma, sans-serif;
   background: var(--asphalt-dark);
   color: var(--road-white);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  overflow-x: hidden;
 }
 
 body::before {

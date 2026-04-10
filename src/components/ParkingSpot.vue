@@ -6,13 +6,16 @@
   >
     <div
       class="spot-card"
-      :class="[statusClass, { 'is-hovered': isHover }]"
+      :class="[statusClass, { 'is-hovered': isHover || isTapped }]"
       :style="spotStyle"
       role="button"
       tabindex="0"
       :aria-pressed="status === 'occupied'"
       :aria-label="`موقف ${spotId} - ${statusLabel}`"
       @click="onClick"
+      @touchstart.passive="isTapped = true"
+      @touchend="isTapped = false"
+      @touchcancel="isTapped = false"
       @keydown.enter="onClick"
       @keydown.space.prevent="onClick"
     >
@@ -26,55 +29,55 @@
     </div>
 
     <Transition name="tooltip-fade">
-      <div v-if="isHover" class="spot-tooltip" aria-hidden="true">
+      <div v-if="isHover || isTapped" class="spot-tooltip" aria-hidden="true">
         {{ statusLabel }}
       </div>
     </Transition>
   </div>
 </template>
 
-<script>
-export default {
-  name: "ParkingSpot",
-  props: {
-    spotId: { type: [String, Number], required: true },
-    status: {
-      type: String,
-      default: "free",
-      validator: (v) => ["free", "occupied"].includes(v),
-    },
-    position: { type: Object, default: () => ({ x: 0, y: 0 }) },
-    size: { type: Object, default: () => ({ width: 130, height: 75 }) },
+<script setup>
+import { ref, computed } from "vue";
+
+const props = defineProps({
+  spotId: { type: [String, Number], required: true },
+  status: {
+    type: String,
+    default: "free",
+    validator: (v) => ["free", "occupied"].includes(v),
   },
-  emits: ["spot-click"],
-  data() {
-    return {
-      isHover: false,
-    };
-  },
-  computed: {
-    statusClass() {
-      return this.status === "free" ? "is-free" : "is-occupied";
-    },
-    statusLabel() {
-      return this.status === "occupied" ? "مشغولة" : "متاحة";
-    },
-    spotStyle() {
-      return {
-        width: `${this.size.width}px`,
-        height: `${this.size.height}px`,
-      };
-    },
-  },
-  methods: {
-    onClick() {
-      this.$emit("spot-click", {
-        spotId: this.spotId,
-        position: this.position,
-      });
-    },
-  },
-};
+  position: { type: Object, default: () => ({ x: 0, y: 0 }) },
+  size: { type: Object, default: () => ({ width: 130, height: 75 }) },
+});
+
+const emit = defineEmits(["spot-click"]);
+
+const isHover = ref(false);
+const isTapped = ref(false);
+
+const statusClass = computed(() => {
+  return props.status === "free" ? "is-free" : "is-occupied";
+});
+
+const statusLabel = computed(() => {
+  return props.status === "occupied" ? "مشغولة" : "متاحة";
+});
+
+const spotStyle = computed(() => {
+  const w = props.size.width;
+  const h = props.size.height;
+  return {
+    width: typeof w === "string" ? w : `${w}px`,
+    height: typeof h === "string" ? h : `${h}px`,
+  };
+});
+
+function onClick() {
+  emit("spot-click", {
+    spotId: props.spotId,
+    position: props.position,
+  });
+}
 </script>
 
 <style scoped>
@@ -336,7 +339,7 @@ export default {
 
 @media (max-width: 360px) {
   .spot-card {
-    width: 100% !important;
+    width: 100%;
     max-width: 200px;
     min-height: 50px;
     flex-direction: row;

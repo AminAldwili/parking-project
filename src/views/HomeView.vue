@@ -387,4 +387,49 @@ export default {
     font-size: 0.7rem;
   }
 }
+
+@media (max-width: 320px) {
+  .hero-card {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .hero-badge {
+    padding: 5px 10px;
+    font-size: 0.7rem;
+  }
+
+  .hero-content h2 {
+    font-size: 1.05rem;
+    margin-bottom: 8px;
+  }
+
+  .hero-content p {
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+
+  .hero-stats {
+    gap: 8px;
+  }
+
+  .stat-chip {
+    min-width: 70px;
+    padding: 8px 10px;
+    border-radius: 12px;
+  }
+
+  .stat-chip strong {
+    font-size: 1rem;
+  }
+
+  .stat-chip span {
+    font-size: 0.65rem;
+  }
+
+  .stat-icon {
+    width: 22px;
+    height: 22px;
+  }
+}
 </style>
