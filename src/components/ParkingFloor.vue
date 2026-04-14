@@ -181,31 +181,50 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/*
+ * ============================================================================
+ * ParkingFloor - Individual Floor Display
+ * ============================================================================
+ * 
+ * Renders parking spots in a grid layout with an aisle line.
+ * 
+ * Layout Modes:
+ * - Desktop: Absolute positioned spots in a grid
+ * - Mobile (360px): Vertical stack layout for better touch interaction
+ * 
+ * Components:
+ * - Aisle line: Central driving aisle visualization
+ * - Group labels: Section markers (A, B, C)
+ * - Spot wrappers: Individual parking spots
+ * 
+ * ============================================================================
+ */
+
 .floor-container {
   position: relative;
   width: 100%;
-  min-height: 520px;
+  min-height: clamp(400px, 80vh, 520px);
   overflow: hidden;
-  padding: 56px 24px 24px;
+  padding: clamp(44px, 10vw, 56px) var(--space-lg) var(--space-lg);
   background: var(--asphalt-dark);
 }
 
 .spots-wrapper {
   position: absolute;
-  inset: 56px 0 24px;
+  inset: clamp(44px, 10vw, 56px) 0 var(--space-lg);
 }
 
 .spot-wrapper {
   position: absolute;
   transform: translate(-50%, -50%);
-  padding: 24px 12px;
+  padding: var(--space-lg) var(--space-md);
 }
 
 .aisle-line {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 70px;
+  width: clamp(50px, 10vw, 70px);
   transform: translateX(-50%);
   z-index: 0;
   display: flex;
@@ -247,16 +266,16 @@ onUnmounted(() => {
 
 .group-label {
   position: absolute;
-  top: 8px;
+  top: var(--space-xs);
   transform: translateX(-50%);
-  min-width: 36px;
+  min-width: clamp(30px, 8vw, 36px);
   text-align: center;
   background: var(--road-yellow);
   color: var(--asphalt-dark);
-  padding: 4px 10px;
-  border-radius: 8px;
+  padding: var(--space-2xs) var(--space-xs);
+  border-radius: var(--radius-sm);
   font-weight: 800;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
 }
 
@@ -269,8 +288,8 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  padding: 16px 0;
+  gap: var(--space-lg);
+  padding: var(--space-md) 0;
   inset: auto;
   position: relative;
 }
@@ -280,7 +299,7 @@ onUnmounted(() => {
   left: auto !important;
   top: auto !important;
   transform: none;
-  padding: 8px;
+  padding: var(--space-xs);
 }
 
 .group-labels.hidden-mobile {
@@ -288,11 +307,6 @@ onUnmounted(() => {
 }
 
 @media (max-width: 768px) {
-  .floor-container {
-    min-height: clamp(400px, 70vh, 520px);
-    padding-top: clamp(44px, 10vw, 56px);
-  }
-
   .aisle-line {
     width: clamp(40px, 8vw, 70px);
   }
@@ -301,7 +315,7 @@ onUnmounted(() => {
 @media (max-width: 360px) {
   .floor-container {
     min-height: auto;
-    padding-inline: clamp(8px, 3vw, 16px);
+    padding-inline: var(--space-md);
   }
 
   .aisle-line {

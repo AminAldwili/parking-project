@@ -92,6 +92,20 @@ export default {
 </script>
 
 <style scoped>
+/*
+ * ============================================================================
+ * HomeView - Hero Section & Parking Overview
+ * ============================================================================
+ * 
+ * Uses CSS Custom Properties from App.vue for consistent fluid values.
+ * 
+ * Components:
+ * - Hero Card: Main intro section with stats
+ * - ParkingFloors: Interactive parking layout
+ * 
+ * ============================================================================
+ */
+
 .home-view {
   display: flex;
   flex-direction: column;
@@ -104,7 +118,16 @@ export default {
   align-items: center;
   justify-content: space-between;
   gap: clamp(16px, 3vw, 24px);
-  padding: clamp(20px, 4vw, 40px);
+  padding: max(
+      clamp(20px, 4vw, 40px),
+      env(safe-area-inset-top),
+      env(safe-area-inset-bottom)
+    )
+    max(
+      clamp(20px, 4vw, 40px),
+      env(safe-area-inset-right),
+      env(safe-area-inset-left)
+    );
   border-radius: clamp(16px, 3vw, 24px);
   background: linear-gradient(
     135deg,
@@ -140,19 +163,19 @@ export default {
 .hero-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
-  padding: 8px 16px;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  padding: var(--space-xs) var(--space-md);
   border-radius: 999px;
   background: rgba(245, 158, 11, 0.15);
   border: 1px solid rgba(245, 158, 11, 0.3);
-  font-size: 0.85rem;
+  font-size: var(--text-base);
   font-weight: 700;
   color: var(--accent-orange);
 }
 
 .badge-icon {
-  font-size: 1rem;
+  font-size: var(--text-base);
 }
 
 .hero-content h2 {
@@ -172,7 +195,7 @@ export default {
 
 .hero-stats {
   display: flex;
-  gap: 12px;
+  gap: var(--space-md);
   flex-wrap: wrap;
 }
 
@@ -197,8 +220,8 @@ export default {
 }
 
 .stat-icon {
-  width: 28px;
-  height: 28px;
+  width: var(--icon-sm);
+  height: var(--icon-sm);
   color: var(--accent-teal);
 }
 
@@ -224,13 +247,13 @@ export default {
 }
 
 .stat-chip strong {
-  font-size: 1.4rem;
+  font-size: var(--text-lg);
   font-weight: 800;
   color: var(--road-white);
 }
 
 .stat-chip span {
-  font-size: 0.85rem;
+  font-size: var(--text-base);
   color: rgba(241, 245, 249, 0.6);
 }
 
@@ -251,7 +274,7 @@ export default {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 40px;
+  width: var(--icon-md);
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -268,16 +291,16 @@ export default {
 }
 
 .road-markings .dash {
-  width: 6px;
-  height: 30px;
+  width: var(--space-2xs);
+  height: clamp(20px, 4vw, 30px);
   background: var(--road-white);
-  border-radius: 3px;
+  border-radius: var(--space-2xs);
 }
 
 @media (max-width: 768px) {
   .hero-card {
     flex-direction: column;
-    gap: clamp(14px, 3vw, 20px);
+    gap: var(--space-md);
   }
 
   .hero-stats {
@@ -292,12 +315,8 @@ export default {
 }
 
 @media (max-width: 480px) {
-  .hero-badge {
-    padding: clamp(5px, 1.5vw, 8px) clamp(10px, 2.5vw, 14px);
-  }
-
   .hero-stats {
-    gap: clamp(6px, 2vw, 10px);
+    gap: var(--space-sm);
   }
 }
 </style>

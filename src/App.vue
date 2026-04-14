@@ -31,9 +31,32 @@
 </template>
 
 <style lang="scss">
+/*
+ * ============================================================================
+ * Fluid Design System - Parking Project
+ * ============================================================================
+ * 
+ * This project uses a modern CSS fluid design approach for responsive layouts.
+ * 
+ * Key Features:
+ * - CSS Custom Properties for consistent spacing, typography, and sizing
+ * - clamp() functions for fluid values that scale smoothly between breakpoints
+ * - Safe area support for edge screens (iPhone notch, Samsung edge, etc.)
+ * 
+ * Browser Support:
+ * - Chrome 79+, Firefox 75+, Safari 13.1+, Edge 79+
+ * 
+ * Viewport Range: 280px - 1400px+
+ * 
+ * ============================================================================
+ */
+
 :root {
   color-scheme: dark;
 
+  /* ================================
+     Design Tokens - Colors
+     ================================ */
   --asphalt-dark: #0f0f1a;
   --asphalt-base: #1a1a2e;
   --asphalt-light: #16213e;
@@ -53,6 +76,61 @@
 
   --glass-bg: rgba(26, 26, 46, 0.85);
   --glass-border: rgba(255, 255, 255, 0.08);
+
+  /* ================================
+     Fluid Design System - Spacing
+     Fluid range: 280px - 1400px viewport
+     ================================ */
+  --space-2xs: clamp(2px, 0.5vw, 6px);
+  --space-xs: clamp(4px, 1vw, 10px);
+  --space-sm: clamp(6px, 1.5vw, 14px);
+  --space-md: clamp(10px, 2.5vw, 20px);
+  --space-lg: clamp(14px, 4vw, 28px);
+  --space-xl: clamp(20px, 5vw, 40px);
+  --space-2xl: clamp(24px, 6vw, 48px);
+
+  /* ================================
+     Fluid Design System - Typography
+     ================================ */
+  --text-2xs: clamp(0.55rem, 1.3vw, 0.65rem);
+  --text-xs: clamp(0.65rem, 1.5vw, 0.78rem);
+  --text-sm: clamp(0.75rem, 2vw, 0.9rem);
+  --text-base: clamp(0.85rem, 2.2vw, 1rem);
+  --text-md: clamp(0.95rem, 2.5vw, 1.15rem);
+  --text-lg: clamp(1.1rem, 3vw, 1.4rem);
+  --text-xl: clamp(1.3rem, 4vw, 2.2rem);
+  --text-2xl: clamp(1.5rem, 5vw, 2.5rem);
+
+  /* ================================
+     Fluid Design System - Sizing
+     ================================ */
+  --icon-xs: clamp(16px, 4vw, 22px);
+  --icon-sm: clamp(20px, 5vw, 28px);
+  --icon-md: clamp(28px, 7vw, 40px);
+  --icon-lg: clamp(38px, 9vw, 52px);
+  --icon-xl: clamp(48px, 11vw, 64px);
+
+  /* ================================
+     Fluid Design System - Border Radius
+     ================================ */
+  --radius-sm: clamp(6px, 1.5vw, 10px);
+  --radius-md: clamp(10px, 2.5vw, 16px);
+  --radius-lg: clamp(14px, 3.5vw, 20px);
+  --radius-xl: clamp(18px, 4.5vw, 28px);
+
+  /* ================================
+     Safe Area Support - Edge Screens
+     Fallback: 0 on unsupported browsers
+     ================================ */
+  --safe-top: max(clamp(10px, 3vw, 20px), env(safe-area-inset-top));
+  --safe-bottom: max(clamp(10px, 3vw, 20px), env(safe-area-inset-bottom));
+  --safe-left: max(clamp(10px, 3vw, 20px), env(safe-area-inset-left));
+  --safe-right: max(clamp(10px, 3vw, 20px), env(safe-area-inset-right));
+  --safe-inline: max(
+    clamp(10px, 3vw, 20px),
+    env(safe-area-inset-left),
+    env(safe-area-inset-right)
+  );
 }
 
 * {
@@ -108,7 +186,7 @@ a {
 #app-shell {
   position: relative;
   min-height: 100vh;
-  padding: clamp(10px, 3vw, 20px);
+  padding: var(--safe-top) var(--safe-inline) var(--safe-bottom);
 }
 
 .app-background {
@@ -138,14 +216,14 @@ a {
 
 .topbar {
   max-width: 1400px;
-  margin: 0 auto 24px;
+  margin: 0 auto var(--space-lg);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
-  padding: 16px 24px;
+  gap: var(--space-lg);
+  padding: var(--space-md) var(--space-lg);
   border: 1px solid var(--glass-border);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   background: var(--glass-bg);
   backdrop-filter: blur(20px);
   box-shadow:
@@ -156,18 +234,18 @@ a {
 .brand-block {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: var(--space-md);
 }
 
 .brand-sign {
   position: relative;
-  width: 52px;
-  height: 52px;
+  width: var(--icon-lg);
+  height: var(--icon-lg);
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(145deg, var(--accent-orange), #d97706);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   box-shadow:
     0 4px 16px var(--accent-glow),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -180,7 +258,7 @@ a {
   width: 100%;
   height: 100%;
   border: 3px dashed rgba(255, 255, 255, 0.3);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   animation: rotate-sign 20s linear infinite;
 }
 
@@ -198,7 +276,7 @@ a {
 }
 
 .sign-content {
-  font-size: 1.8rem;
+  font-size: var(--text-xl);
   font-weight: 800;
   color: #fff;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -211,7 +289,7 @@ a {
 }
 
 .brand-kicker {
-  font-size: 0.72rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--accent-orange);
@@ -228,18 +306,18 @@ a {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-sm);
   flex-wrap: wrap;
 }
 
 .nav-links a {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
-  border-radius: 12px;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: var(--text-sm);
   color: rgba(241, 245, 249, 0.7);
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid transparent;
@@ -247,7 +325,7 @@ a {
 }
 
 .nav-icon {
-  font-size: 1rem;
+  font-size: var(--text-base);
 }
 
 .nav-links a:hover {

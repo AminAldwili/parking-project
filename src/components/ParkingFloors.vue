@@ -318,6 +318,24 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/*
+ * ============================================================================
+ * ParkingFloors - Interactive Parking Layout
+ * ============================================================================
+ * 
+ * Contains:
+ * - Floor boxes (Floor 1 & Floor 2)
+ * - Ramp connector between floors
+ * - Route path visualization
+ * 
+ * Features:
+ * - Dynamic path drawing on spot selection
+ * - Ramp animation on path activation
+ * - Fluid spacing via CSS Custom Properties
+ * 
+ * ============================================================================
+ */
+
 .parking-floors {
   width: 100%;
   position: relative;
@@ -326,7 +344,13 @@ onUnmounted(() => {
 
 .parking-shell {
   position: relative;
-  padding: clamp(12px, 4vw, 28px);
+  padding: max(clamp(12px, 4vw, 28px), env(safe-area-inset-top))
+    max(
+      clamp(12px, 4vw, 28px),
+      env(safe-area-inset-right),
+      env(safe-area-inset-left)
+    )
+    max(clamp(12px, 4vw, 28px), env(safe-area-inset-bottom));
   border-radius: clamp(14px, 4vw, 28px);
   background: var(--asphalt-base);
   border: 1px solid var(--glass-border);
@@ -361,7 +385,7 @@ onUnmounted(() => {
 }
 
 .section-heading h3 {
-  margin: 8px 0 0;
+  margin: var(--space-xs) 0 0;
   font-size: clamp(1.3rem, 2vw, 1.8rem);
   color: var(--road-white);
 }
@@ -376,8 +400,8 @@ onUnmounted(() => {
 .eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.78rem;
+  gap: var(--space-xs);
+  font-size: var(--text-xs);
   font-weight: 700;
   color: var(--accent-orange);
   text-transform: uppercase;
@@ -385,19 +409,19 @@ onUnmounted(() => {
 }
 
 .eyebrow-icon {
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
 }
 
 .floors-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-md);
 }
 
 .floor-box {
   position: relative;
   border: 2px solid rgba(251, 191, 36, 0.2);
-  border-radius: 24px;
+  border-radius: var(--radius-xl);
   overflow: hidden;
   background: var(--asphalt-light);
   box-shadow:
@@ -438,20 +462,20 @@ onUnmounted(() => {
 }
 
 .floor-sign {
-  width: 48px;
-  height: 48px;
+  width: var(--icon-md);
+  height: var(--icon-md);
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, var(--road-yellow), #f59e0b);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   box-shadow:
     0 4px 16px rgba(251, 191, 36, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .floor-level {
-  font-size: 1.5rem;
+  font-size: var(--text-xl);
   font-weight: 800;
   color: var(--asphalt-dark);
 }
@@ -462,33 +486,33 @@ onUnmounted(() => {
 
 .floor-title {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: var(--text-md);
   font-weight: 800;
   color: var(--road-white);
 }
 
 .floor-subtitle {
-  margin: 4px 0 0;
+  margin: var(--space-2xs) 0 0;
   color: rgba(241, 245, 249, 0.5);
-  font-size: 0.88rem;
+  font-size: var(--text-sm);
 }
 
 .route-origin-pill {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
   border-radius: 999px;
   background: rgba(245, 158, 11, 0.15);
   border: 1px solid rgba(245, 158, 11, 0.3);
   color: var(--accent-orange);
-  font-size: 0.85rem;
+  font-size: var(--text-base);
   font-weight: 700;
 }
 
 .route-origin-dot {
-  width: 10px;
-  height: 10px;
+  width: var(--space-xs);
+  height: var(--space-xs);
   border-radius: 50%;
   background: var(--road-yellow);
   box-shadow:
@@ -517,10 +541,10 @@ onUnmounted(() => {
 
 .route-origin-anchor {
   position: absolute;
-  bottom: 10px;
+  bottom: var(--space-sm);
   left: 50%;
-  width: 22px;
-  height: 22px;
+  width: clamp(18px, 4vw, 22px);
+  height: clamp(18px, 4vw, 22px);
   border: 3px solid var(--road-white);
   border-radius: 999px;
   transform: translateX(-50%);
@@ -548,7 +572,7 @@ onUnmounted(() => {
 
 .ramp-connector {
   position: relative;
-  height: 90px;
+  height: clamp(70px, 12vw, 90px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -557,14 +581,14 @@ onUnmounted(() => {
 .ramp-wrapper {
   position: relative;
   width: min(300px, 80%);
-  height: 64px;
+  height: clamp(48px, 10vw, 64px);
 }
 
 .ramp-track {
   position: absolute;
   inset: 0;
   background: linear-gradient(180deg, #0a0a14 0%, #12121f 50%, #0a0a14 100%);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: 3px solid rgba(251, 191, 36, 0.35);
   box-shadow:
     0 4px 20px rgba(0, 0, 0, 0.5),
@@ -589,7 +613,7 @@ onUnmounted(() => {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 5px;
+  width: var(--space-2xs);
   background: linear-gradient(
     180deg,
     rgba(251, 191, 36, 0.25) 0%,
@@ -600,19 +624,19 @@ onUnmounted(() => {
 }
 
 .ramp-edge.left {
-  left: 10px;
+  left: var(--space-sm);
 }
 
 .ramp-edge.right {
-  right: 10px;
+  right: var(--space-sm);
 }
 
 .ramp-center-line {
   position: absolute;
   top: 50%;
-  left: 30px;
-  right: 30px;
-  height: 4px;
+  left: clamp(24px, 6vw, 30px);
+  right: clamp(24px, 6vw, 30px);
+  height: clamp(3px, 0.8vw, 4px);
   transform: translateY(-50%);
   background: repeating-linear-gradient(
     90deg,
@@ -627,19 +651,19 @@ onUnmounted(() => {
 
 .ramp-lane-mark {
   position: absolute;
-  left: 30px;
-  right: 30px;
+  left: clamp(24px, 6vw, 30px);
+  right: clamp(24px, 6vw, 30px);
   height: 2px;
   background: rgba(255, 255, 255, 0.06);
   border-radius: 1px;
 }
 
 .ramp-lane-mark.top {
-  top: 18px;
+  top: clamp(14px, 4vw, 18px);
 }
 
 .ramp-lane-mark.bottom {
-  bottom: 18px;
+  bottom: clamp(14px, 4vw, 18px);
 }
 
 .ramp-arrows-layer {
@@ -652,30 +676,30 @@ onUnmounted(() => {
 }
 
 .ramp-arrow-svg {
-  width: 30px;
-  height: 45px;
+  width: clamp(24px, 5vw, 30px);
+  height: clamp(36px, 8vw, 45px);
 }
 
 .ramp-sign {
   position: absolute;
-  top: -16px;
+  top: calc(-1 * var(--space-md));
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-2xs);
   z-index: 100;
 }
 
 .sign-badge {
-  width: 40px;
-  height: 40px;
+  width: var(--icon-md);
+  height: var(--icon-md);
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(145deg, var(--road-yellow), #f59e0b);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   box-shadow:
     0 2px 12px rgba(251, 191, 36, 0.3),
     inset 0 2px 0 rgba(255, 255, 255, 0.3);
@@ -683,13 +707,13 @@ onUnmounted(() => {
 }
 
 .sign-level {
-  font-size: 1.4rem;
+  font-size: var(--text-lg);
   font-weight: 800;
   color: var(--asphalt-dark);
 }
 
 .sign-text {
-  font-size: 0.7rem;
+  font-size: var(--text-2xs);
   font-weight: 700;
   color: rgba(241, 245, 249, 0.7);
   text-transform: uppercase;
@@ -732,22 +756,17 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .ramp-wrapper {
     width: min(260px, 85%);
-    height: clamp(48px, 8vw, 64px);
-  }
-
-  .ramp-connector {
-    height: clamp(70px, 12vw, 90px);
   }
 
   .section-heading {
     flex-direction: column;
     align-items: flex-start;
-    gap: clamp(8px, 2vw, 12px);
+    gap: var(--space-sm);
   }
 
   .floor-header {
     flex-wrap: wrap;
-    gap: clamp(8px, 2vw, 12px);
+    gap: var(--space-sm);
   }
 
   .route-origin-pill {
@@ -757,23 +776,18 @@ onUnmounted(() => {
 
 @media (max-width: 480px) {
   .floor-box {
-    border-radius: clamp(14px, 3vw, 24px);
+    border-radius: var(--radius-lg);
     border-width: 1.5px;
   }
 
   .section-heading h3 {
-    font-size: clamp(1rem, 3vw, 1.8rem);
+    font-size: var(--text-lg);
   }
 }
 
 @media (max-width: 360px) {
   .ramp-wrapper {
     width: min(200px, 85vw);
-    height: clamp(40px, 10vw, 44px);
-  }
-
-  .ramp-connector {
-    height: clamp(55px, 15vw, 65px);
   }
 }
 </style>

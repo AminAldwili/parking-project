@@ -81,6 +81,29 @@ function onClick() {
 </script>
 
 <style scoped>
+/*
+ * ============================================================================
+ * ParkingSpot - Individual Parking Spot Component
+ * ============================================================================
+ * 
+ * A single parking spot with status indicator and interaction states.
+ * 
+ * States:
+ * - Free (green): Available for parking
+ * - Occupied (red): Currently in use
+ * 
+ * Interactions:
+ * - Hover: Elevation effect + tooltip
+ * - Touch: Tap feedback + tooltip
+ * - Click: Emits spot-click event for path drawing
+ * 
+ * Accessibility:
+ * - Keyboard navigable (Enter/Space to select)
+ * - ARIA labels for screen readers
+ * 
+ * ============================================================================
+ */
+
 .parking-spot {
   position: relative;
   display: inline-block;
@@ -126,10 +149,10 @@ function onClick() {
 
 .spot-indicator {
   position: absolute;
-  bottom: 6px;
-  right: 6px;
-  width: 10px;
-  height: 10px;
+  bottom: clamp(4px, 1vw, 6px);
+  right: clamp(4px, 1vw, 6px);
+  width: clamp(8px, 2vw, 10px);
+  height: clamp(8px, 2vw, 10px);
   border-radius: 50%;
   transition: all 250ms ease;
 }
@@ -265,12 +288,12 @@ function onClick() {
   bottom: -12px;
   left: 50%;
   transform: translateX(-50%) translateY(100%);
-  padding: 6px 12px;
-  border-radius: 8px;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
   background: var(--asphalt-dark);
   border: 1px solid var(--glass-border);
   color: var(--road-white);
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   font-weight: 700;
   white-space: nowrap;
   z-index: 60;
@@ -281,7 +304,7 @@ function onClick() {
 .spot-tooltip::before {
   content: "";
   position: absolute;
-  top: -6px;
+  top: calc(-1 * var(--space-2xs));
   left: 50%;
   transform: translateX(-50%);
   border: 6px solid transparent;
@@ -300,65 +323,41 @@ function onClick() {
 }
 
 @media (max-width: 768px) {
-  .spot-id {
-    font-size: 1rem;
-  }
-
-  .spot-state {
-    font-size: 0.7rem;
-  }
-
   .spot-indicator {
-    width: 8px;
-    height: 8px;
+    width: clamp(6px, 1.5vw, 8px);
+    height: clamp(6px, 1.5vw, 8px);
   }
 }
 
 @media (max-width: 480px) {
   .spot-card {
-    border-radius: 6px;
-    min-width: 44px;
-    min-height: 44px;
-  }
-
-  .spot-id {
-    font-size: 0.9rem;
-  }
-
-  .spot-state {
-    font-size: 0.65rem;
+    border-radius: clamp(6px, 1.5vw, 8px);
+    min-width: clamp(44px, 12vw, 50px);
+    min-height: clamp(44px, 12vw, 50px);
   }
 
   .spot-indicator {
-    width: 6px;
-    height: 6px;
-    bottom: 4px;
-    right: 4px;
+    width: clamp(5px, 1.2vw, 6px);
+    height: clamp(5px, 1.2vw, 6px);
+    bottom: clamp(2px, 0.8vw, 4px);
+    right: clamp(2px, 0.8vw, 4px);
   }
 }
 
 @media (max-width: 360px) {
   .spot-card {
     width: 100%;
-    max-width: 200px;
-    min-height: 50px;
+    max-width: clamp(160px, 60vw, 200px);
+    min-height: clamp(44px, 14vw, 50px);
     flex-direction: row;
     justify-content: space-between;
-    padding: 12px 16px;
-    border-radius: 8px;
+    padding: clamp(10px, 3vw, 16px);
+    border-radius: clamp(6px, 2vw, 8px);
   }
 
   .spot-inner {
     flex-direction: row;
-    gap: 12px;
-  }
-
-  .spot-id {
-    font-size: 1rem;
-  }
-
-  .spot-state {
-    font-size: 0.8rem;
+    gap: clamp(8px, 2.5vw, 12px);
   }
 
   .spot-indicator {
@@ -366,8 +365,8 @@ function onClick() {
     bottom: auto;
     right: auto;
     align-self: center;
-    width: 8px;
-    height: 8px;
+    width: clamp(6px, 2vw, 8px);
+    height: clamp(6px, 2vw, 8px);
   }
 }
 </style>
