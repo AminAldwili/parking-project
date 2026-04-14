@@ -289,80 +289,23 @@ onUnmounted(() => {
 
 @media (max-width: 768px) {
   .floor-container {
-    min-height: 480px;
-    padding: 50px 16px 20px;
+    min-height: clamp(400px, 70vh, 520px);
+    padding-top: clamp(44px, 10vw, 56px);
   }
 
   .aisle-line {
-    width: 50px;
-  }
-
-  .spots-wrapper {
-    inset: 50px 0 20px;
-  }
-
-  .spot-wrapper {
-    padding: 22px 10px;
-  }
-
-  .group-label {
-    min-width: 32px;
-    padding: 3px 8px;
-    font-size: 0.8rem;
-    border-radius: 6px;
-  }
-}
-
-@media (max-width: 480px) {
-  .floor-container {
-    min-height: 400px;
-    padding: 44px 12px 16px;
-  }
-
-  .aisle-line {
-    width: 40px;
-  }
-
-  .spots-wrapper {
-    inset: 44px 0 16px;
-  }
-
-  .spot-wrapper {
-    padding: 18px 8px;
-  }
-
-  .group-label {
-    min-width: 28px;
-    padding: 2px 6px;
-    font-size: 0.75rem;
-    border-radius: 5px;
-    top: 6px;
+    width: clamp(40px, 8vw, 70px);
   }
 }
 
 @media (max-width: 360px) {
   .floor-container {
     min-height: auto;
-    padding: 40px 10px 20px;
+    padding-inline: clamp(8px, 3vw, 16px);
   }
 
   .aisle-line {
     display: none;
-  }
-}
-
-@media (max-width: 320px) {
-  .floor-container {
-    padding: 36px 8px 16px;
-  }
-
-  .spots-wrapper.mobile-stack {
-    gap: 16px;
-    padding: 12px 0;
-  }
-
-  .spot-wrapper.mobile-spot {
-    padding: 6px;
   }
 }
 </style>

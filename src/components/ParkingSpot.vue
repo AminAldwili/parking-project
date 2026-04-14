@@ -111,14 +111,14 @@ function onClick() {
 }
 
 .spot-id {
-  font-size: 1.1rem;
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
   font-weight: 800;
   letter-spacing: 0.02em;
   transition: transform 200ms ease;
 }
 
 .spot-state {
-  font-size: 0.75rem;
+  font-size: clamp(0.65rem, 1.8vw, 0.75rem);
   font-weight: 600;
   opacity: 0.85;
   transition: opacity 200ms ease;

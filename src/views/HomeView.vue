@@ -103,9 +103,9 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  padding: 32px 40px;
-  border-radius: 24px;
+  gap: clamp(16px, 3vw, 24px);
+  padding: clamp(20px, 4vw, 40px);
+  border-radius: clamp(16px, 3vw, 24px);
   background: linear-gradient(
     135deg,
     var(--asphalt-base) 0%,
@@ -156,8 +156,8 @@ export default {
 }
 
 .hero-content h2 {
-  margin: 0 0 12px;
-  font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+  margin: 0 0 clamp(8px, 1.5vw, 12px);
+  font-size: clamp(1.2rem, 3vw, 2.2rem);
   font-weight: 800;
   color: var(--road-white);
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
@@ -165,8 +165,8 @@ export default {
 
 .hero-content p {
   margin: 0;
-  font-size: 1rem;
-  line-height: 1.8;
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  line-height: clamp(1.5, 2.5vw, 1.8);
   color: rgba(241, 245, 249, 0.75);
 }
 
@@ -180,10 +180,10 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  min-width: 100px;
-  padding: 16px 20px;
-  border-radius: 16px;
+  gap: clamp(4px, 1vw, 6px);
+  min-width: max(80px, 20%);
+  padding: clamp(12px, 2.5vw, 20px);
+  border-radius: clamp(12px, 2vw, 16px);
   background: var(--asphalt-dark);
   border: 1px solid var(--glass-border);
   text-align: center;
@@ -277,17 +277,7 @@ export default {
 @media (max-width: 768px) {
   .hero-card {
     flex-direction: column;
-    padding: 24px;
-    gap: 20px;
-  }
-
-  .hero-content h2 {
-    font-size: 1.5rem;
-  }
-
-  .hero-content p {
-    font-size: 0.95rem;
-    line-height: 1.7;
+    gap: clamp(14px, 3vw, 20px);
   }
 
   .hero-stats {
@@ -296,140 +286,18 @@ export default {
     justify-content: center;
   }
 
-  .stat-chip {
-    min-width: 100px;
-    padding: 14px 18px;
-  }
-
-  .stat-chip strong {
-    font-size: 1.3rem;
-  }
-
-  .stat-chip span {
-    font-size: 0.8rem;
-  }
-
   .road-markings {
     display: none;
   }
 }
 
 @media (max-width: 480px) {
-  .hero-card {
-    padding: 20px;
-    border-radius: 20px;
-    gap: 16px;
-  }
-
   .hero-badge {
-    padding: 6px 12px;
-    font-size: 0.78rem;
-  }
-
-  .hero-content h2 {
-    font-size: 1.3rem;
-    margin-bottom: 10px;
-  }
-
-  .hero-content p {
-    font-size: 0.9rem;
-    line-height: 1.6;
+    padding: clamp(5px, 1.5vw, 8px) clamp(10px, 2.5vw, 14px);
   }
 
   .hero-stats {
-    gap: 10px;
-  }
-
-  .stat-chip {
-    min-width: 85px;
-    padding: 12px 14px;
-    border-radius: 14px;
-  }
-
-  .stat-chip strong {
-    font-size: 1.2rem;
-  }
-
-  .stat-chip span {
-    font-size: 0.75rem;
-  }
-
-  .stat-icon {
-    width: 24px;
-    height: 24px;
-  }
-}
-
-@media (max-width: 360px) {
-  .hero-card {
-    padding: 16px;
-    border-radius: 16px;
-  }
-
-  .hero-content h2 {
-    font-size: 1.15rem;
-  }
-
-  .hero-content p {
-    font-size: 0.85rem;
-  }
-
-  .stat-chip {
-    min-width: 75px;
-    padding: 10px 12px;
-  }
-
-  .stat-chip strong {
-    font-size: 1.1rem;
-  }
-
-  .stat-chip span {
-    font-size: 0.7rem;
-  }
-}
-
-@media (max-width: 320px) {
-  .hero-card {
-    padding: 14px;
-    border-radius: 14px;
-  }
-
-  .hero-badge {
-    padding: 5px 10px;
-    font-size: 0.7rem;
-  }
-
-  .hero-content h2 {
-    font-size: 1.05rem;
-    margin-bottom: 8px;
-  }
-
-  .hero-content p {
-    font-size: 0.8rem;
-    line-height: 1.5;
-  }
-
-  .hero-stats {
-    gap: 8px;
-  }
-
-  .stat-chip {
-    min-width: 70px;
-    padding: 8px 10px;
-    border-radius: 12px;
-  }
-
-  .stat-chip strong {
-    font-size: 1rem;
-  }
-
-  .stat-chip span {
-    font-size: 0.65rem;
-  }
-
-  .stat-icon {
-    width: 22px;
-    height: 22px;
+    gap: clamp(6px, 2vw, 10px);
   }
 }
 </style>

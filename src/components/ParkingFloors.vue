@@ -326,8 +326,8 @@ onUnmounted(() => {
 
 .parking-shell {
   position: relative;
-  padding: 28px;
-  border-radius: 28px;
+  padding: clamp(12px, 4vw, 28px);
+  border-radius: clamp(14px, 4vw, 28px);
   background: var(--asphalt-base);
   border: 1px solid var(--glass-border);
   box-shadow:
@@ -354,9 +354,9 @@ onUnmounted(() => {
   display: flex;
   align-items: end;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 24px;
-  padding-bottom: 20px;
+  gap: clamp(8px, 2vw, 16px);
+  margin-bottom: clamp(16px, 3vw, 24px);
+  padding-bottom: clamp(12px, 3vw, 20px);
   border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
 }
 
@@ -431,8 +431,8 @@ onUnmounted(() => {
 .floor-header {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 16px 20px 12px;
+  gap: clamp(10px, 2vw, 16px);
+  padding: clamp(10px, 2vw, 16px) clamp(12px, 3vw, 20px) clamp(8px, 2vw, 12px);
   background: rgba(0, 0, 0, 0.2);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
@@ -730,262 +730,50 @@ onUnmounted(() => {
 }
 
 @media (max-width: 768px) {
-  .parking-shell {
-    padding: 18px;
-    border-radius: 20px;
-  }
-
   .ramp-wrapper {
     width: min(260px, 85%);
-    height: 56px;
+    height: clamp(48px, 8vw, 64px);
   }
 
   .ramp-connector {
-    height: 80px;
-  }
-
-  .sign-badge {
-    width: 34px;
-    height: 34px;
-  }
-
-  .sign-level {
-    font-size: 1.2rem;
-  }
-
-  .sign-text {
-    font-size: 0.65rem;
+    height: clamp(70px, 12vw, 90px);
   }
 
   .section-heading {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
-  }
-
-  .section-heading h3 {
-    font-size: 1.2rem;
-  }
-
-  .section-heading p {
-    font-size: 0.9rem;
+    gap: clamp(8px, 2vw, 12px);
   }
 
   .floor-header {
     flex-wrap: wrap;
-    padding: 14px 16px 10px;
-    gap: 12px;
-  }
-
-  .floor-sign {
-    width: 42px;
-    height: 42px;
-  }
-
-  .floor-level {
-    font-size: 1.3rem;
-  }
-
-  .floor-title {
-    font-size: 1rem;
-  }
-
-  .floor-subtitle {
-    font-size: 0.82rem;
+    gap: clamp(8px, 2vw, 12px);
   }
 
   .route-origin-pill {
     align-self: flex-start;
-    font-size: 0.8rem;
   }
 }
 
 @media (max-width: 480px) {
-  .parking-shell {
-    padding: 14px;
-    border-radius: 16px;
-  }
-
-  .ramp-wrapper {
-    width: min(220px, 90%);
-    height: 48px;
-  }
-
-  .ramp-connector {
-    height: 70px;
-  }
-
-  .sign-badge {
-    width: 30px;
-    height: 30px;
-  }
-
-  .sign-level {
-    font-size: 1.1rem;
-  }
-
-  .sign-text {
-    font-size: 0.6rem;
-  }
-
   .floor-box {
-    border-radius: 16px;
+    border-radius: clamp(14px, 3vw, 24px);
     border-width: 1.5px;
   }
 
-  .floor-sign {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-  }
-
-  .floor-level {
-    font-size: 1.2rem;
-  }
-
-  .floor-subtitle {
-    font-size: 0.78rem;
-  }
-
   .section-heading h3 {
-    font-size: 1.1rem;
-  }
-
-  .section-heading p {
-    font-size: 0.85rem;
-    line-height: 1.5;
-  }
-
-  .eyebrow {
-    font-size: 0.7rem;
-  }
-
-  .eyebrow-icon {
-    font-size: 0.8rem;
-  }
-
-  .floor-header {
-    padding: 12px 14px 8px;
-  }
-
-  .floor-title {
-    font-size: 0.95rem;
+    font-size: clamp(1rem, 3vw, 1.8rem);
   }
 }
 
 @media (max-width: 360px) {
-  .parking-shell {
-    padding: 12px;
-    border-radius: 14px;
-  }
-
   .ramp-wrapper {
     width: min(200px, 85vw);
-    height: 44px;
+    height: clamp(40px, 10vw, 44px);
   }
 
   .ramp-connector {
-    height: 65px;
-  }
-
-  .sign-badge {
-    width: 28px;
-    height: 28px;
-  }
-
-  .sign-level {
-    font-size: 1rem;
-  }
-
-  .floor-header {
-    padding: 10px 12px 6px;
-  }
-
-  .floor-sign {
-    width: 34px;
-    height: 34px;
-  }
-
-  .floor-level {
-    font-size: 1.1rem;
-  }
-}
-
-@media (max-width: 320px) {
-  .parking-shell {
-    padding: 10px;
-    border-radius: 12px;
-  }
-
-  .section-heading {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    margin-bottom: 16px;
-    padding-bottom: 16px;
-  }
-
-  .section-heading h3 {
-    font-size: 1rem;
-  }
-
-  .section-heading p {
-    font-size: 0.8rem;
-    line-height: 1.5;
-  }
-
-  .floor-box {
-    border-radius: 14px;
-  }
-
-  .floor-header {
-    padding: 10px 10px 8px;
-    gap: 10px;
-  }
-
-  .floor-sign {
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
-  }
-
-  .floor-level {
-    font-size: 1rem;
-  }
-
-  .floor-title {
-    font-size: 0.9rem;
-  }
-
-  .floor-subtitle {
-    font-size: 0.75rem;
-  }
-
-  .route-origin-pill {
-    padding: 6px 10px;
-    font-size: 0.75rem;
-  }
-
-  .ramp-wrapper {
-    width: min(180px, 85vw);
-    height: 40px;
-  }
-
-  .ramp-connector {
-    height: 55px;
-  }
-
-  .sign-badge {
-    width: 24px;
-    height: 24px;
-  }
-
-  .sign-level {
-    font-size: 0.9rem;
-  }
-
-  .sign-text {
-    font-size: 0.55rem;
+    height: clamp(55px, 15vw, 65px);
   }
 }
 </style>

@@ -66,7 +66,7 @@ html {
 body {
   margin: 0;
   direction: rtl;
-  min-width: 360px;
+  min-width: clamp(280px, 85vw, 100%);
   font-family: "Tajawal", "Segoe UI", Tahoma, sans-serif;
   background: var(--asphalt-dark);
   color: var(--road-white);
@@ -108,7 +108,7 @@ a {
 #app-shell {
   position: relative;
   min-height: 100vh;
-  padding: 20px;
+  padding: clamp(10px, 3vw, 20px);
 }
 
 .app-background {
@@ -271,41 +271,15 @@ a {
 
 @media (max-width: 768px) {
   .topbar {
-    padding: 14px 18px;
-    border-radius: 16px;
-    gap: 16px;
-  }
-
-  .brand-sign {
-    width: 46px;
-    height: 46px;
-    border-radius: 10px;
-  }
-
-  .sign-content {
-    font-size: 1.5rem;
-  }
-
-  .brand-block h1 {
-    font-size: 1.1rem;
-  }
-
-  .nav-links a {
-    padding: 9px 14px;
-    font-size: 0.9rem;
+    flex-wrap: wrap;
+    gap: clamp(12px, 2vw, 16px);
   }
 }
 
 @media (max-width: 480px) {
-  #app-shell {
-    padding: 10px;
-  }
-
   .topbar {
     flex-direction: column;
-    gap: 14px;
-    padding: 14px;
-    border-radius: 14px;
+    gap: clamp(10px, 2vw, 14px);
   }
 
   .brand-block {
@@ -313,61 +287,22 @@ a {
     justify-content: center;
   }
 
-  .brand-sign {
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
-  }
-
-  .sign-content {
-    font-size: 1.4rem;
-  }
-
-  .brand-kicker {
-    font-size: 0.65rem;
-  }
-
-  .brand-block h1 {
-    font-size: 1rem;
-  }
-
   .nav-links {
     width: 100%;
     justify-content: center;
-    gap: 6px;
+    gap: clamp(4px, 1.5vw, 8px);
   }
 
   .nav-links a {
     flex: 1;
     justify-content: center;
-    padding: 12px 10px;
-    font-size: 0.85rem;
-    border-radius: 10px;
-  }
-
-  .nav-icon {
-    font-size: 0.9rem;
   }
 }
 
 @media (max-width: 360px) {
-  .topbar {
-    padding: 12px;
-    border-radius: 12px;
-  }
-
-  .brand-sign {
-    width: 38px;
-    height: 38px;
-  }
-
-  .sign-content {
-    font-size: 1.2rem;
-  }
-
-  .nav-links a {
-    padding: 10px 8px;
-    font-size: 0.8rem;
+  .brand-block {
+    flex-direction: column;
+    gap: clamp(8px, 2vw, 12px);
   }
 }
 </style>
