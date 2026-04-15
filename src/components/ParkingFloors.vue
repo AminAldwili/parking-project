@@ -17,7 +17,7 @@
       </div>
 
       <div class="floors-container">
-        <section class="floor-box">
+        <section class="floor-box" ref="secondFloorBox">
           <div class="floor-header">
             <div class="floor-sign">
               <span class="floor-level">2</span>
@@ -33,6 +33,7 @@
             :floor="2"
             :spots-prop="floor2Spots"
             :aisle-x-percent="aisleXPercent"
+            @floor-resize="handleFloorResize"
             @request-path="handleRequestPath"
           />
         </section>
@@ -116,6 +117,7 @@
             :floor="1"
             :spots-prop="floor1Spots"
             :aisle-x-percent="aisleXPercent"
+            @floor-resize="handleFloorResize"
             @request-path="handleRequestPath"
           />
         </section>
@@ -184,13 +186,33 @@ yPositions.forEach((y, idx) => {
 const container = ref(null);
 const rampConnector = ref(null);
 const firstFloorBox = ref(null);
+const secondFloorBox = ref(null);
 
 const containerSize = ref({ width: 0, height: 0 });
 const activePath = ref(null);
 const rampRect = ref(null);
 const clearTimer = ref(null);
 const resizeObserver = ref(null);
-const currentSpotSize = reactive({ width: 130, height: 75 });
+const floorWidths = reactive({ 1: 0, 2: 0 });
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function measureFloorWidths() {
+  const firstRect = firstFloorBox.value?.getBoundingClientRect();
+  const secondRect = secondFloorBox.value?.getBoundingClientRect();
+  if (firstRect?.width) floorWidths[1] = firstRect.width;
+  if (secondRect?.width) floorWidths[2] = secondRect.width;
+}
+
+function getFluidSpotSize(floorWidth) {
+  const baseWidth =
+    Number.isFinite(floorWidth) && floorWidth > 0 ? floorWidth : window.innerWidth;
+  const spotWidth = clamp(Math.round(baseWidth * 0.28), 64, 130);
+  const spotHeight = clamp(Math.round(spotWidth * 0.58), 42, 75);
+  return { width: spotWidth, height: spotHeight };
+}
 
 function updateContainerSize() {
   nextTick(() => {
@@ -202,31 +224,34 @@ function updateContainerSize() {
 }
 
 function updateSpotSizes() {
-  const width = window.innerWidth;
-  if (width < 360) {
-    currentSpotSize.width = "100%";
-    currentSpotSize.height = 50;
-  } else if (width < 480) {
-    currentSpotSize.width = 90;
-    currentSpotSize.height = 55;
-  } else if (width < 768) {
-    currentSpotSize.width = 110;
-    currentSpotSize.height = 65;
-  } else {
-    currentSpotSize.width = 130;
-    currentSpotSize.height = 75;
+  if (!floorWidths[1] || !floorWidths[2]) {
+    measureFloorWidths();
   }
   applySpotSizes();
 }
 
 function applySpotSizes() {
-  const size = { ...currentSpotSize };
+  const floor1Size = getFluidSpotSize(floorWidths[1]);
+  const floor2Size = getFluidSpotSize(floorWidths[2]);
   floor1Spots.forEach((spot) => {
-    spot.size = { ...size };
+    spot.size = { ...floor1Size };
   });
   floor2Spots.forEach((spot) => {
-    spot.size = { ...size };
+    spot.size = { ...floor2Size };
   });
+}
+
+function handleFloorResize(payload) {
+  if (!payload?.floor || !payload?.rect?.width) return;
+  floorWidths[Number(payload.floor)] = payload.rect.width;
+  updateSpotSizes();
+}
+
+function handleWindowResize() {
+  updateContainerSize();
+  updateRampRect();
+  measureFloorWidths();
+  updateSpotSizes();
 }
 
 function updateRampRect() {
@@ -293,22 +318,22 @@ onMounted(() => {
     if (el && window.ResizeObserver) {
       resizeObserver.value = new ResizeObserver(() => {
         updateContainerSize();
+        measureFloorWidths();
+        updateSpotSizes();
       });
       resizeObserver.value.observe(el);
     }
     updateContainerSize();
     updateRampRect();
+    measureFloorWidths();
     updateSpotSizes();
   });
 
-  window.addEventListener("resize", () => {
-    updateContainerSize();
-    updateSpotSizes();
-  });
+  window.addEventListener("resize", handleWindowResize);
 });
 
 onUnmounted(() => {
-  window.removeEventListener("resize", updateContainerSize);
+  window.removeEventListener("resize", handleWindowResize);
   if (resizeObserver.value) {
     resizeObserver.value.disconnect();
     resizeObserver.value = null;

@@ -2,7 +2,6 @@
   <div
     ref="container"
     class="floor-container"
-    :class="{ 'is-mobile-stack': isMobileStack }"
     role="region"
   >
     <div
@@ -14,8 +13,8 @@
         <div class="aisle-center-line"></div>
       </div>
     </div>
-    <div class="spots-wrapper" :class="{ 'mobile-stack': isMobileStack }">
-      <div class="group-labels" :class="{ 'hidden-mobile': isMobileStack }">
+    <div class="spots-wrapper">
+      <div class="group-labels">
         <div
           v-for="g in groupList"
           :key="g.section"
@@ -29,8 +28,7 @@
         v-for="spot in spots"
         :key="spot.id"
         class="spot-wrapper"
-        :class="{ 'mobile-spot': isMobileStack }"
-        :style="isMobileStack ? {} : { left: spot.x + '%', top: spot.y + '%' }"
+        :style="{ left: spot.x + '%', top: spot.y + '%' }"
         :ref="(el) => setSpotRef(spot.id, el)"
       >
         <ParkingSpot
@@ -55,19 +53,16 @@ const props = defineProps({
   aisleXPercent: { type: Number, default: 50 },
 });
 
-const emit = defineEmits(["request-path"]);
+const emit = defineEmits(["request-path", "floor-resize"]);
 
 const container = ref(null);
 const spots = ref([]);
 const resizeObserver = ref(null);
 const spotRefs = ref({});
-const windowWidth = ref(window.innerWidth);
-
-const isMobileStack = computed(() => windowWidth.value <= 360);
 
 const groupList = computed(() => {
   const map = {};
-  (props.spots || []).forEach((s) => {
+  spots.value.forEach((s) => {
     if (!s || !s.section) return;
     if (!map[s.section]) map[s.section] = { section: s.section, x: s.x };
   });
@@ -120,7 +115,6 @@ function updateContainerSize() {
 }
 
 function handleResize() {
-  windowWidth.value = window.innerWidth;
   updateContainerSize();
 }
 
@@ -283,43 +277,9 @@ onUnmounted(() => {
   font-weight: 800;
 }
 
-/* Mobile Stack Layout (360px and below) */
-.spots-wrapper.mobile-stack {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-lg);
-  padding: var(--space-md) 0;
-  inset: auto;
-  position: relative;
-}
-
-.spot-wrapper.mobile-spot {
-  position: relative;
-  left: auto !important;
-  top: auto !important;
-  transform: none;
-  padding: var(--space-xs);
-}
-
-.group-labels.hidden-mobile {
-  display: none;
-}
-
 @media (max-width: 768px) {
   .aisle-line {
     width: clamp(40px, 8vw, 70px);
-  }
-}
-
-@media (max-width: 360px) {
-  .floor-container {
-    min-height: auto;
-    padding-inline: var(--space-md);
-  }
-
-  .aisle-line {
-    display: none;
   }
 }
 </style>

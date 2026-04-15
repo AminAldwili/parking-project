@@ -344,29 +344,4 @@ function onClick() {
   }
 }
 
-@media (max-width: 360px) {
-  .spot-card {
-    width: 100%;
-    max-width: clamp(160px, 60vw, 200px);
-    min-height: clamp(44px, 14vw, 50px);
-    flex-direction: row;
-    justify-content: space-between;
-    padding: clamp(10px, 3vw, 16px);
-    border-radius: clamp(6px, 2vw, 8px);
-  }
-
-  .spot-inner {
-    flex-direction: row;
-    gap: clamp(8px, 2.5vw, 12px);
-  }
-
-  .spot-indicator {
-    position: relative;
-    bottom: auto;
-    right: auto;
-    align-self: center;
-    width: clamp(6px, 2vw, 8px);
-    height: clamp(6px, 2vw, 8px);
-  }
-}
 </style>
