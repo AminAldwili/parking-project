@@ -7,13 +7,17 @@
 
       <div class="hero-content">
         <div class="hero-badge">
-          <span class="badge-icon">🅿️</span>
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h1v2c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-2h1c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7z"
+            />
+          </svg>
           <span>Smart Parking Flow</span>
         </div>
         <h2>اختيار الموقف صار أوضح وأسرع</h2>
         <p>
-          اضغط على أي موقف ليظهر لك المسار الأصفر المنطلق من أعلى منتصف الدور
-          الأول إلى موقع الموقف المختار مباشرة.
+          اضغط على أي موقف ليظهر لك المسار المنطلق من أعلى منتصف الدور الأول إلى
+          موقع الموقف المختار مباشرة.
         </p>
       </div>
 
@@ -25,6 +29,8 @@
               fill="none"
               stroke="currentColor"
               stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
             >
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
               <polyline points="9,22 9,12 15,12 15,22" />
@@ -40,6 +46,8 @@
               fill="none"
               stroke="currentColor"
               stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
             >
               <rect x="3" y="3" width="18" height="18" rx="2" />
               <path d="M9 17V7h4a3 3 0 0 1 0 6H9" />
@@ -55,6 +63,8 @@
               fill="none"
               stroke="currentColor"
               stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
             >
               <circle cx="12" cy="12" r="10" />
               <polyline points="12,6 12,12 16,14" />
@@ -92,20 +102,6 @@ export default {
 </script>
 
 <style scoped>
-/*
- * ============================================================================
- * HomeView - Hero Section & Parking Overview
- * ============================================================================
- * 
- * Uses CSS Custom Properties from App.vue for consistent fluid values.
- * 
- * Components:
- * - Hero Card: Main intro section with stats
- * - ParkingFloors: Interactive parking layout
- * 
- * ============================================================================
- */
-
 .home-view {
   display: flex;
   flex-direction: column;
@@ -136,9 +132,7 @@ export default {
   );
   border: 1px solid var(--glass-border);
   overflow: hidden;
-  box-shadow:
-    0 20px 50px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: var(--shadow-lg);
 }
 
 .hero-card::before {
@@ -149,8 +143,8 @@ export default {
     90deg,
     transparent,
     transparent 60px,
-    rgba(255, 255, 255, 0.02) 60px,
-    rgba(255, 255, 255, 0.02) 61px
+    rgba(14, 165, 233, 0.01) 60px,
+    rgba(14, 165, 233, 0.01) 61px
   );
   pointer-events: none;
 }
@@ -167,30 +161,31 @@ export default {
   margin-bottom: var(--space-md);
   padding: var(--space-xs) var(--space-md);
   border-radius: 999px;
-  background: rgba(245, 158, 11, 0.15);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  font-size: var(--text-base);
-  font-weight: 700;
-  color: var(--accent-orange);
+  background: var(--accent-glow);
+  border: 1px solid var(--aisle-border);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--accent-primary);
 }
 
-.badge-icon {
-  font-size: var(--text-base);
+.hero-badge svg {
+  width: 16px;
+  height: 16px;
 }
 
 .hero-content h2 {
   margin: 0 0 clamp(8px, 1.5vw, 12px);
   font-size: clamp(1.2rem, 3vw, 2.2rem);
-  font-weight: 800;
-  color: var(--road-white);
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
 }
 
 .hero-content p {
   margin: 0;
   font-size: clamp(0.85rem, 2vw, 1rem);
   line-height: clamp(1.5, 2.5vw, 1.8);
-  color: rgba(241, 245, 249, 0.75);
+  color: var(--text-secondary);
 }
 
 .hero-stats {
@@ -206,23 +201,26 @@ export default {
   gap: clamp(4px, 1vw, 6px);
   min-width: max(80px, 20%);
   padding: clamp(12px, 2.5vw, 20px);
-  border-radius: clamp(12px, 2vw, 16px);
+  border-radius: var(--radius-lg);
   background: var(--asphalt-dark);
   border: 1px solid var(--glass-border);
   text-align: center;
-  transition: all 200ms ease;
+  transition:
+    transform var(--duration-normal) var(--ease-out),
+    box-shadow var(--duration-normal) var(--ease-out),
+    border-color var(--duration-normal) var(--ease-out);
 }
 
 .stat-chip:hover {
   transform: translateY(-3px);
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-md);
+  border-color: var(--aisle-border);
 }
 
 .stat-icon {
   width: var(--icon-sm);
   height: var(--icon-sm);
-  color: var(--accent-teal);
+  color: var(--accent-primary);
 }
 
 .stat-icon svg {
@@ -248,26 +246,26 @@ export default {
 
 .stat-chip strong {
   font-size: var(--text-lg);
-  font-weight: 800;
-  color: var(--road-white);
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .stat-chip span {
-  font-size: var(--text-base);
-  color: rgba(241, 245, 249, 0.6);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
 }
 
 .stat-chip.accent {
-  background: rgba(245, 158, 11, 0.1);
-  border-color: rgba(245, 158, 11, 0.25);
+  background: var(--accent-glow);
+  border-color: var(--aisle-border);
 }
 
 .stat-chip.accent .stat-icon {
-  color: var(--accent-orange);
+  color: var(--accent-primary);
 }
 
 .stat-chip.accent strong {
-  color: var(--accent-orange);
+  color: var(--accent-primary);
 }
 
 .road-markings {
@@ -279,7 +277,7 @@ export default {
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
-  opacity: 0.4;
+  opacity: 0.3;
 }
 
 .road-markings.left {
@@ -293,8 +291,9 @@ export default {
 .road-markings .dash {
   width: var(--space-2xs);
   height: clamp(20px, 4vw, 30px);
-  background: var(--road-white);
+  background: var(--accent-primary);
   border-radius: var(--space-2xs);
+  opacity: 0.5;
 }
 
 @media (max-width: 768px) {

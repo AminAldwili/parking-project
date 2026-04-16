@@ -5,7 +5,18 @@
       <div class="section-heading">
         <div>
           <span class="eyebrow">
-            <span class="eyebrow-icon">🗺️</span>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
+              <line x1="8" y1="2" x2="8" y2="18" />
+              <line x1="16" y1="6" x2="16" y2="22" />
+            </svg>
             Interactive Layout
           </span>
           <h3>خريطة المواقف</h3>
@@ -66,12 +77,12 @@
                     >
                       <stop
                         offset="0%"
-                        stop-color="#fbbf24"
+                        stop-color="#f59e0b"
                         stop-opacity="0.4"
                       />
                       <stop
                         offset="100%"
-                        stop-color="#fbbf24"
+                        stop-color="#f59e0b"
                         stop-opacity="1"
                       />
                     </linearGradient>
@@ -208,7 +219,9 @@ function measureFloorWidths() {
 
 function getFluidSpotSize(floorWidth) {
   const baseWidth =
-    Number.isFinite(floorWidth) && floorWidth > 0 ? floorWidth : window.innerWidth;
+    Number.isFinite(floorWidth) && floorWidth > 0
+      ? floorWidth
+      : window.innerWidth;
   const spotWidth = clamp(Math.round(baseWidth * 0.28), 64, 130);
   const spotHeight = clamp(Math.round(spotWidth * 0.58), 42, 75);
   return { width: spotWidth, height: spotHeight };
@@ -343,24 +356,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/*
- * ============================================================================
- * ParkingFloors - Interactive Parking Layout
- * ============================================================================
- * 
- * Contains:
- * - Floor boxes (Floor 1 & Floor 2)
- * - Ramp connector between floors
- * - Route path visualization
- * 
- * Features:
- * - Dynamic path drawing on spot selection
- * - Ramp animation on path activation
- * - Fluid spacing via CSS Custom Properties
- * 
- * ============================================================================
- */
-
 .parking-floors {
   width: 100%;
   position: relative;
@@ -393,8 +388,8 @@ onUnmounted(() => {
     90deg,
     transparent,
     transparent 40px,
-    rgba(255, 255, 255, 0.015) 40px,
-    rgba(255, 255, 255, 0.015) 41px
+    rgba(255, 255, 255, 0.01) 40px,
+    rgba(255, 255, 255, 0.01) 41px
   );
   pointer-events: none;
 }
@@ -406,20 +401,22 @@ onUnmounted(() => {
   gap: clamp(8px, 2vw, 16px);
   margin-bottom: clamp(16px, 3vw, 24px);
   padding-bottom: clamp(12px, 3vw, 20px);
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+  border-bottom: 1px dashed var(--aisle-border);
 }
 
 .section-heading h3 {
   margin: var(--space-xs) 0 0;
   font-size: clamp(1.3rem, 2vw, 1.8rem);
-  color: var(--road-white);
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .section-heading p {
   margin: 0;
   max-width: 440px;
   line-height: 1.7;
-  color: rgba(241, 245, 249, 0.6);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
 }
 
 .eyebrow {
@@ -427,14 +424,15 @@ onUnmounted(() => {
   align-items: center;
   gap: var(--space-xs);
   font-size: var(--text-xs);
-  font-weight: 700;
-  color: var(--accent-orange);
+  font-weight: 600;
+  color: var(--accent-primary);
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
 }
 
-.eyebrow-icon {
-  font-size: var(--text-sm);
+.eyebrow svg {
+  width: 14px;
+  height: 14px;
 }
 
 .floors-container {
@@ -445,13 +443,11 @@ onUnmounted(() => {
 
 .floor-box {
   position: relative;
-  border: 2px solid rgba(251, 191, 36, 0.2);
+  border: 1px solid var(--aisle-border);
   border-radius: var(--radius-xl);
   overflow: hidden;
   background: var(--asphalt-light);
-  box-shadow:
-    inset 0 2px 0 rgba(251, 191, 36, 0.05),
-    0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-md);
 }
 
 .floor-box::before {
@@ -463,15 +459,15 @@ onUnmounted(() => {
       90deg,
       transparent,
       transparent 100px,
-      rgba(255, 255, 255, 0.01) 100px,
-      rgba(255, 255, 255, 0.01) 101px
+      rgba(14, 165, 233, 0.01) 100px,
+      rgba(14, 165, 233, 0.01) 101px
     ),
     linear-gradient(
       180deg,
-      rgba(251, 191, 36, 0.03) 0%,
+      rgba(14, 165, 233, 0.03) 0%,
       transparent 30%,
       transparent 70%,
-      rgba(0, 0, 0, 0.15) 100%
+      rgba(0, 0, 0, 0.08) 100%
     );
   pointer-events: none;
   z-index: 1;
@@ -482,8 +478,8 @@ onUnmounted(() => {
   align-items: center;
   gap: clamp(10px, 2vw, 16px);
   padding: clamp(10px, 2vw, 16px) clamp(12px, 3vw, 20px) clamp(8px, 2vw, 12px);
-  background: rgba(0, 0, 0, 0.2);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.12);
+  border-bottom: 1px solid var(--aisle-border);
 }
 
 .floor-sign {
@@ -492,17 +488,21 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--road-yellow), #f59e0b);
+  background: linear-gradient(
+    135deg,
+    var(--accent-primary),
+    var(--accent-light)
+  );
   border-radius: var(--radius-md);
   box-shadow:
-    0 4px 16px rgba(251, 191, 36, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    var(--shadow-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .floor-level {
   font-size: var(--text-xl);
-  font-weight: 800;
-  color: var(--asphalt-dark);
+  font-weight: 700;
+  color: #fff;
 }
 
 .floor-info {
@@ -512,13 +512,13 @@ onUnmounted(() => {
 .floor-title {
   margin: 0;
   font-size: var(--text-md);
-  font-weight: 800;
-  color: var(--road-white);
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .floor-subtitle {
   margin: var(--space-2xs) 0 0;
-  color: rgba(241, 245, 249, 0.5);
+  color: var(--text-tertiary);
   font-size: var(--text-sm);
 }
 
@@ -528,21 +528,21 @@ onUnmounted(() => {
   gap: var(--space-sm);
   padding: var(--space-xs) var(--space-sm);
   border-radius: 999px;
-  background: rgba(245, 158, 11, 0.15);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  color: var(--accent-orange);
-  font-size: var(--text-base);
-  font-weight: 700;
+  background: var(--accent-gold-glow);
+  border: 1px solid var(--accent-gold);
+  color: var(--accent-gold);
+  font-size: var(--text-sm);
+  font-weight: 600;
 }
 
 .route-origin-dot {
   width: var(--space-xs);
   height: var(--space-xs);
   border-radius: 50%;
-  background: var(--road-yellow);
+  background: var(--accent-gold);
   box-shadow:
-    0 0 8px var(--road-yellow),
-    0 0 0 3px rgba(251, 191, 36, 0.25);
+    0 0 8px var(--accent-gold),
+    0 0 0 3px var(--accent-gold-glow);
   animation: ambient-pulse 2s ease-in-out infinite;
 }
 
@@ -552,15 +552,15 @@ onUnmounted(() => {
     opacity: 1;
     transform: scale(1);
     box-shadow:
-      0 0 8px var(--road-yellow),
-      0 0 0 3px rgba(251, 191, 36, 0.25);
+      0 0 8px var(--accent-gold),
+      0 0 0 3px var(--accent-gold-glow);
   }
   50% {
     opacity: 0.7;
     transform: scale(0.9);
     box-shadow:
-      0 0 4px var(--road-yellow),
-      0 0 0 5px rgba(251, 191, 36, 0.15);
+      0 0 4px var(--accent-gold),
+      0 0 0 5px var(--accent-gold-glow);
   }
 }
 
@@ -570,13 +570,17 @@ onUnmounted(() => {
   left: 50%;
   width: clamp(18px, 4vw, 22px);
   height: clamp(18px, 4vw, 22px);
-  border: 3px solid var(--road-white);
+  border: 3px solid rgba(255, 255, 255, 0.9);
   border-radius: 999px;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, var(--road-yellow), var(--accent-orange));
+  background: linear-gradient(
+    135deg,
+    var(--accent-gold),
+    var(--accent-gold-light)
+  );
   box-shadow:
-    0 0 0 6px rgba(251, 191, 36, 0.25),
-    0 0 20px rgba(251, 191, 36, 0.4);
+    0 0 0 6px var(--accent-gold-glow),
+    0 0 20px var(--accent-gold-glow);
   z-index: 10;
   animation: anchor-glow 3s ease-in-out infinite;
 }
@@ -585,13 +589,13 @@ onUnmounted(() => {
   0%,
   100% {
     box-shadow:
-      0 0 0 6px rgba(251, 191, 36, 0.25),
-      0 0 15px rgba(251, 191, 36, 0.3);
+      0 0 0 6px var(--accent-gold-glow),
+      0 0 15px var(--accent-gold-glow);
   }
   50% {
     box-shadow:
-      0 0 0 8px rgba(251, 191, 36, 0.2),
-      0 0 25px rgba(251, 191, 36, 0.5);
+      0 0 0 8px var(--accent-gold-glow),
+      0 0 25px var(--accent-gold);
   }
 }
 
@@ -612,12 +616,17 @@ onUnmounted(() => {
 .ramp-track {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, #0a0a14 0%, #12121f 50%, #0a0a14 100%);
+  background: linear-gradient(
+    180deg,
+    var(--asphalt-base) 0%,
+    var(--asphalt-light) 50%,
+    var(--asphalt-base) 100%
+  );
   border-radius: var(--radius-md);
-  border: 3px solid rgba(251, 191, 36, 0.35);
+  border: 2px solid var(--aisle-border);
   box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.5),
-    inset 0 0 40px rgba(0, 0, 0, 0.4);
+    var(--shadow-md),
+    inset 0 0 40px rgba(0, 0, 0, 0.2);
   overflow: hidden;
 }
 
@@ -629,9 +638,10 @@ onUnmounted(() => {
     90deg,
     transparent,
     transparent 38px,
-    rgba(255, 255, 255, 0.02) 38px,
-    rgba(255, 255, 255, 0.02) 40px
+    var(--aisle-border) 38px,
+    var(--aisle-border) 40px
   );
+  opacity: 0.3;
 }
 
 .ramp-edge {
@@ -641,10 +651,10 @@ onUnmounted(() => {
   width: var(--space-2xs);
   background: linear-gradient(
     180deg,
-    rgba(251, 191, 36, 0.25) 0%,
-    rgba(251, 191, 36, 0.6) 20%,
-    rgba(251, 191, 36, 0.6) 80%,
-    rgba(251, 191, 36, 0.25) 100%
+    transparent 0%,
+    var(--aisle-border) 20%,
+    var(--aisle-border) 80%,
+    transparent 100%
   );
 }
 
@@ -665,13 +675,13 @@ onUnmounted(() => {
   transform: translateY(-50%);
   background: repeating-linear-gradient(
     90deg,
-    var(--road-yellow) 0px,
-    var(--road-yellow) 20px,
+    var(--accent-primary) 0px,
+    var(--accent-primary) 20px,
     transparent 20px,
     transparent 35px
   );
   opacity: 0.5;
-  transition: opacity 400ms ease;
+  transition: opacity var(--duration-slow) var(--ease-out);
 }
 
 .ramp-lane-mark {
@@ -679,7 +689,7 @@ onUnmounted(() => {
   left: clamp(24px, 6vw, 30px);
   right: clamp(24px, 6vw, 30px);
   height: 2px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--aisle-border);
   border-radius: 1px;
 }
 
@@ -723,46 +733,62 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(145deg, var(--road-yellow), #f59e0b);
+  background: linear-gradient(
+    145deg,
+    var(--accent-primary),
+    var(--accent-light)
+  );
   border-radius: var(--radius-sm);
   box-shadow:
-    0 2px 12px rgba(251, 191, 36, 0.3),
-    inset 0 2px 0 rgba(255, 255, 255, 0.3);
-  transition: box-shadow 400ms ease;
+    var(--shadow-glow),
+    inset 0 2px 0 rgba(255, 255, 255, 0.25);
+  transition: box-shadow var(--duration-slow) var(--ease-out);
 }
 
 .sign-level {
   font-size: var(--text-lg);
-  font-weight: 800;
-  color: var(--asphalt-dark);
+  font-weight: 700;
+  color: #fff;
 }
 
 .sign-text {
   font-size: var(--text-2xs);
-  font-weight: 700;
-  color: rgba(241, 245, 249, 0.7);
+  font-weight: 600;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
 
 .ramp-connector.ramp-active .ramp-track {
-  border-color: rgba(251, 191, 36, 0.6);
+  border-color: var(--accent-gold);
   box-shadow:
-    0 2px 16px rgba(251, 191, 36, 0.2),
-    inset 0 0 20px rgba(251, 191, 36, 0.05);
-  transition: all 400ms ease;
+    0 4px 20px var(--accent-gold-glow),
+    inset 0 0 20px var(--accent-gold-glow);
+  transition: all var(--duration-slow) var(--ease-out);
 }
 
 .ramp-connector.ramp-active .ramp-center-line {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--accent-gold) 0px,
+    var(--accent-gold) 20px,
+    transparent 20px,
+    transparent 35px
+  );
   opacity: 0.85;
   animation: dash-flow 1.2s linear infinite;
 }
 
 .ramp-connector.ramp-active .sign-badge {
+  background: linear-gradient(
+    145deg,
+    var(--accent-gold),
+    var(--accent-gold-light)
+  );
   box-shadow:
-    0 2px 16px rgba(251, 191, 36, 0.4),
+    0 8px 40px var(--accent-gold-glow),
     inset 0 2px 0 rgba(255, 255, 255, 0.3);
-  transition: box-shadow 400ms ease;
+  transition: box-shadow var(--duration-slow) var(--ease-out);
 }
 
 @keyframes dash-flow {
@@ -802,7 +828,7 @@ onUnmounted(() => {
 @media (max-width: 480px) {
   .floor-box {
     border-radius: var(--radius-lg);
-    border-width: 1.5px;
+    border-width: 1px;
   }
 
   .section-heading h3 {

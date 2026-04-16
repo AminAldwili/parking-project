@@ -1,27 +1,78 @@
+<script setup>
+import { onMounted, watch } from "vue";
+import { useStore } from "vuex";
+import ThemeToggle from "./components/ThemeToggle.vue";
+
+const store = useStore();
+
+onMounted(() => {
+  store.dispatch("initTheme");
+});
+
+watch(
+  () => store.state.theme,
+  (theme) => {
+    document.documentElement.classList.remove("dark", "light");
+    document.documentElement.classList.add(theme);
+  },
+  { immediate: true },
+);
+</script>
+
 <template>
-  <div id="app-shell">
+  <div id="app-shell" :class="store.state.theme">
     <div class="app-background"></div>
     <header class="topbar">
       <div class="brand-block">
         <div class="brand-sign">
-          <span class="sign-border"></span>
-          <span class="sign-content">P</span>
-          <span class="sign-border"></span>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <path d="M9 17V7h4a3 3 0 0 1 0 6H9" />
+          </svg>
         </div>
         <div class="brand-text">
-          <span class="brand-kicker">Parking Guide</span>
+          <span class="brand-kicker">Smart Parking</span>
           <h1>لوحة إدارة المواقف</h1>
         </div>
       </div>
       <nav class="nav-links" aria-label="Main navigation">
         <router-link to="/">
-          <span class="nav-icon">🏠</span>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9,22 9,12 15,12 15,22" />
+          </svg>
           الرئيسية
         </router-link>
         <router-link to="/about">
-          <span class="nav-icon">ℹ️</span>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="16" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12.01" y2="8" />
+          </svg>
           حول المشروع
         </router-link>
+        <ThemeToggle />
       </nav>
     </header>
     <main class="page-content">
@@ -31,56 +82,70 @@
 </template>
 
 <style lang="scss">
-/*
- * ============================================================================
- * Fluid Design System - Parking Project
- * ============================================================================
- * 
- * This project uses a modern CSS fluid design approach for responsive layouts.
- * 
- * Key Features:
- * - CSS Custom Properties for consistent spacing, typography, and sizing
- * - clamp() functions for fluid values that scale smoothly between breakpoints
- * - Safe area support for edge screens (iPhone notch, Samsung edge, etc.)
- * 
- * Browser Support:
- * - Chrome 79+, Firefox 75+, Safari 13.1+, Edge 79+
- * 
- * Viewport Range: 280px - 1400px+
- * 
- * ============================================================================
- */
-
 :root {
   color-scheme: dark;
 
-  /* ================================
-     Design Tokens - Colors
-     ================================ */
-  --asphalt-dark: #0f0f1a;
-  --asphalt-base: #1a1a2e;
-  --asphalt-light: #16213e;
-  --asphalt-lighter: #252547;
+  /* ========================================
+     Design Tokens - Colors (Refined Blue Theme)
+     ======================================== */
+  --asphalt-dark: #0f1419;
+  --asphalt-base: #1a1f26;
+  --asphalt-light: #242b35;
+  --asphalt-lighter: #2d3640;
 
-  --road-white: #f1f5f9;
-  --road-yellow: #fbbf24;
+  --road-white: #e8ecf0;
+  --road-yellow: #0ea5e9;
 
-  --spot-free: #22c55e;
+  --spot-free: #10b981;
   --spot-occupied: #ef4444;
-  --spot-free-bg: #166534;
-  --spot-occupied-bg: #991b1b;
+  --spot-free-bg: rgba(16, 185, 129, 0.12);
+  --spot-occupied-bg: rgba(239, 68, 68, 0.12);
 
-  --accent-orange: #f59e0b;
-  --accent-glow: rgba(245, 158, 11, 0.3);
-  --accent-teal: #14b8a6;
+  --accent-primary: #0ea5e9;
+  --accent-secondary: #06b6d4;
+  --accent-dark: #0284c7;
+  --accent-light: #38bdf8;
+  --accent-glow: rgba(14, 165, 233, 0.2);
+  --accent-teal: #22d3ee;
 
-  --glass-bg: rgba(26, 26, 46, 0.85);
-  --glass-border: rgba(255, 255, 255, 0.08);
+  --accent-gold: #f59e0b;
+  --accent-gold-light: #fbbf24;
+  --accent-gold-dark: #d97706;
+  --accent-gold-glow: rgba(245, 158, 11, 0.3);
 
-  /* ================================
+  --glass-bg: rgba(26, 31, 38, 0.92);
+  --glass-border: rgba(255, 255, 255, 0.06);
+
+  --text-primary: #e8ecf0;
+  --text-secondary: rgba(232, 236, 240, 0.6);
+  --text-tertiary: rgba(232, 236, 240, 0.4);
+  --focus-ring: rgba(14, 165, 233, 0.5);
+  --aisle-dark: #0f1419;
+  --aisle-border: rgba(14, 165, 233, 0.2);
+  --aisle-line: rgba(14, 165, 233, 0.25);
+
+  /* ========================================
+     Shadow System
+     ======================================== */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 4px 20px rgba(14, 165, 233, 0.25);
+  --shadow-glow-lg: 0 8px 40px rgba(14, 165, 233, 0.35);
+
+  /* ========================================
+     Animation System
+     ======================================== */
+  --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+
+  /* ========================================
      Fluid Design System - Spacing
-     Fluid range: 280px - 1400px viewport
-     ================================ */
+     ======================================== */
   --space-2xs: clamp(2px, 0.5vw, 6px);
   --space-xs: clamp(4px, 1vw, 10px);
   --space-sm: clamp(6px, 1.5vw, 14px);
@@ -89,9 +154,9 @@
   --space-xl: clamp(20px, 5vw, 40px);
   --space-2xl: clamp(24px, 6vw, 48px);
 
-  /* ================================
+  /* ========================================
      Fluid Design System - Typography
-     ================================ */
+     ======================================== */
   --text-2xs: clamp(0.55rem, 1.3vw, 0.65rem);
   --text-xs: clamp(0.65rem, 1.5vw, 0.78rem);
   --text-sm: clamp(0.75rem, 2vw, 0.9rem);
@@ -101,27 +166,26 @@
   --text-xl: clamp(1.3rem, 4vw, 2.2rem);
   --text-2xl: clamp(1.5rem, 5vw, 2.5rem);
 
-  /* ================================
+  /* ========================================
      Fluid Design System - Sizing
-     ================================ */
+     ======================================== */
   --icon-xs: clamp(16px, 4vw, 22px);
   --icon-sm: clamp(20px, 5vw, 28px);
   --icon-md: clamp(28px, 7vw, 40px);
   --icon-lg: clamp(38px, 9vw, 52px);
   --icon-xl: clamp(48px, 11vw, 64px);
 
-  /* ================================
+  /* ========================================
      Fluid Design System - Border Radius
-     ================================ */
+     ======================================== */
   --radius-sm: clamp(6px, 1.5vw, 10px);
   --radius-md: clamp(10px, 2.5vw, 16px);
   --radius-lg: clamp(14px, 3.5vw, 20px);
   --radius-xl: clamp(18px, 4.5vw, 28px);
 
-  /* ================================
-     Safe Area Support - Edge Screens
-     Fallback: 0 on unsupported browsers
-     ================================ */
+  /* ========================================
+     Safe Area Support
+     ======================================== */
   --safe-top: max(clamp(10px, 3vw, 20px), env(safe-area-inset-top));
   --safe-bottom: max(clamp(10px, 3vw, 20px), env(safe-area-inset-bottom));
   --safe-left: max(clamp(10px, 3vw, 20px), env(safe-area-inset-left));
@@ -131,6 +195,52 @@
     env(safe-area-inset-left),
     env(safe-area-inset-right)
   );
+}
+
+:root.light {
+  color-scheme: light;
+
+  --asphalt-dark: #f1f5f9;
+  --asphalt-base: #ffffff;
+  --asphalt-light: #e2e8f0;
+  --asphalt-lighter: #cbd5e1;
+
+  --road-white: #0f172a;
+  --road-yellow: #0369a1;
+
+  --spot-free: #059669;
+  --spot-occupied: #dc2626;
+  --spot-free-bg: rgba(5, 150, 105, 0.1);
+  --spot-occupied-bg: rgba(220, 38, 38, 0.1);
+
+  --accent-primary: #0284c7;
+  --accent-secondary: #0891b2;
+  --accent-dark: #0369a1;
+  --accent-light: #38bdf8;
+  --accent-glow: rgba(2, 132, 199, 0.15);
+  --accent-teal: #06b6d4;
+
+  --accent-gold: #d97706;
+  --accent-gold-light: #f59e0b;
+  --accent-gold-dark: #b45309;
+  --accent-gold-glow: rgba(217, 119, 6, 0.2);
+
+  --glass-bg: rgba(255, 255, 255, 0.95);
+  --glass-border: rgba(0, 0, 0, 0.08);
+
+  --text-primary: #0f172a;
+  --text-secondary: rgba(15, 23, 42, 0.6);
+  --text-tertiary: rgba(15, 23, 42, 0.4);
+  --focus-ring: rgba(2, 132, 199, 0.4);
+  --aisle-dark: #cbd5e1;
+  --aisle-border: rgba(2, 132, 199, 0.25);
+  --aisle-line: rgba(2, 132, 199, 0.3);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 4px 20px rgba(2, 132, 199, 0.15);
+  --shadow-glow-lg: 0 8px 40px rgba(2, 132, 199, 0.2);
 }
 
 * {
@@ -145,7 +255,7 @@ body {
   margin: 0;
   direction: rtl;
   min-width: clamp(280px, 85vw, 100%);
-  font-family: "Tajawal", "Segoe UI", Tahoma, sans-serif;
+  font-family: "Tajawal", "Inter", "Segoe UI", sans-serif;
   background: var(--asphalt-dark);
   color: var(--road-white);
   -webkit-font-smoothing: antialiased;
@@ -164,15 +274,15 @@ body::before {
       90deg,
       transparent,
       transparent 80px,
-      rgba(255, 255, 255, 0.015) 80px,
-      rgba(255, 255, 255, 0.015) 81px
+      rgba(0, 0, 0, 0.015) 80px,
+      rgba(0, 0, 0, 0.015) 81px
     ),
     repeating-linear-gradient(
       0deg,
       transparent,
       transparent 80px,
-      rgba(255, 255, 255, 0.015) 80px,
-      rgba(255, 255, 255, 0.015) 81px
+      rgba(0, 0, 0, 0.015) 80px,
+      rgba(0, 0, 0, 0.015) 81px
     );
   pointer-events: none;
   z-index: 0;
@@ -195,17 +305,37 @@ a {
   background:
     radial-gradient(
       ellipse at 20% 0%,
-      rgba(99, 102, 241, 0.08),
+      rgba(14, 165, 233, 0.08),
       transparent 50%
     ),
     radial-gradient(
       ellipse at 80% 100%,
-      rgba(245, 158, 11, 0.06),
+      rgba(6, 182, 212, 0.05),
       transparent 50%
     ),
     var(--asphalt-dark);
   pointer-events: none;
   z-index: 0;
+}
+
+:root.light .app-background {
+  background:
+    radial-gradient(
+      ellipse at 0% 0%,
+      rgba(56, 189, 248, 0.15),
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 100% 100%,
+      rgba(14, 165, 233, 0.08),
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 80% 20%,
+      rgba(203, 213, 225, 0.3),
+      transparent 45%
+    ),
+    var(--asphalt-dark);
 }
 
 .topbar,
@@ -226,9 +356,13 @@ a {
   border-radius: var(--radius-lg);
   background: var(--glass-bg);
   backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-lg);
+}
+
+:root.light .topbar {
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    var(--shadow-lg),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .brand-block {
@@ -238,48 +372,37 @@ a {
 }
 
 .brand-sign {
-  position: relative;
   width: var(--icon-lg);
   height: var(--icon-lg);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(145deg, var(--accent-orange), #d97706);
+  background: linear-gradient(
+    145deg,
+    var(--accent-primary),
+    var(--accent-dark)
+  );
   border-radius: var(--radius-md);
   box-shadow:
-    0 4px 16px var(--accent-glow),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.brand-sign::before,
-.brand-sign::after {
-  content: "";
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border: 3px dashed rgba(255, 255, 255, 0.3);
-  border-radius: var(--radius-md);
-  animation: rotate-sign 20s linear infinite;
-}
-
-.brand-sign::after {
-  width: 120%;
-  height: 120%;
-  border-color: rgba(245, 158, 11, 0.2);
-  animation-direction: reverse;
-}
-
-@keyframes rotate-sign {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.sign-content {
-  font-size: var(--text-xl);
-  font-weight: 800;
+    var(--shadow-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
   color: #fff;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.brand-sign svg {
+  width: 55%;
+  height: 55%;
+}
+
+:root.light .brand-sign {
+  background: linear-gradient(
+    145deg,
+    var(--accent-primary),
+    var(--accent-light)
+  );
+  box-shadow:
+    var(--shadow-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 .brand-text {
@@ -290,17 +413,18 @@ a {
 
 .brand-kicker {
   font-size: var(--text-xs);
-  letter-spacing: 0.2em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--accent-orange);
-  font-weight: 700;
+  color: var(--accent-primary);
+  font-weight: 600;
 }
 
 .brand-block h1 {
   margin: 0;
   font-size: clamp(1.2rem, 2vw, 1.6rem);
-  font-weight: 800;
-  color: var(--road-white);
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: "Tajawal", sans-serif;
 }
 
 .nav-links {
@@ -313,33 +437,66 @@ a {
 .nav-links a {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
   padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-md);
-  font-weight: 700;
+  font-weight: 600;
   font-size: var(--text-sm);
-  color: rgba(241, 245, 249, 0.7);
+  color: var(--text-secondary);
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid transparent;
-  transition: all 200ms ease;
+  transition: all var(--duration-normal) var(--ease-out);
 }
 
-.nav-icon {
-  font-size: var(--text-base);
+.nav-links a svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 .nav-links a:hover {
-  color: var(--road-white);
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  background: rgba(14, 165, 233, 0.1);
+  border-color: var(--aisle-border);
   transform: translateY(-2px);
+}
+
+.nav-links a:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+:root.light .nav-links a {
+  color: var(--text-secondary);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+:root.light .nav-links a:hover {
+  color: var(--accent-primary);
+  background: rgba(14, 165, 233, 0.08);
+  border-color: rgba(14, 165, 233, 0.25);
+}
+
+:root.light .nav-links a.router-link-exact-active {
+  color: #fff;
+  background: linear-gradient(
+    135deg,
+    var(--accent-primary),
+    var(--accent-light)
+  );
+  border-color: transparent;
+  box-shadow: var(--shadow-glow);
 }
 
 .nav-links a.router-link-exact-active {
   color: #fff;
-  background: linear-gradient(135deg, var(--accent-orange), #d97706);
+  background: linear-gradient(
+    135deg,
+    var(--accent-primary),
+    var(--accent-dark)
+  );
   border-color: transparent;
-  box-shadow: 0 4px 20px var(--accent-glow);
+  box-shadow: var(--shadow-glow);
 }
 
 .page-content {

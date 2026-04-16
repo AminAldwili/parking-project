@@ -1,5 +1,10 @@
 <template>
-  <div class="path-drawer" aria-hidden="true">
+  <div
+    class="path-drawer"
+    role="img"
+    :aria-label="activePath ? 'Navigation path to parking spot' : ''"
+    aria-live="polite"
+  >
     <svg
       v-if="activePath && containerSize.width && containerSize.height"
       :width="containerSize.width"
@@ -206,18 +211,18 @@ onUnmounted(() => {
 }
 
 .start-node {
-  fill: var(--accent-orange);
-  stroke: rgba(255, 255, 255, 0.5);
+  fill: #f59e0b;
+  stroke: rgba(255, 255, 255, 0.8);
   stroke-width: 3;
-  filter: drop-shadow(0 0 12px var(--accent-orange));
+  filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.7));
   animation-delay: 200ms;
 }
 
 .end-node {
-  fill: var(--road-yellow);
-  stroke: rgba(255, 255, 255, 0.5);
+  fill: #fbbf24;
+  stroke: rgba(255, 255, 255, 0.8);
   stroke-width: 3;
-  filter: drop-shadow(0 0 10px var(--road-yellow));
+  filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.7));
   animation-delay: 350ms;
 }
 
@@ -236,5 +241,15 @@ onUnmounted(() => {
     opacity: 1;
     transform: scale(1);
   }
+}
+
+:root.light .start-node {
+  stroke: rgba(255, 255, 255, 0.9);
+  filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6));
+}
+
+:root.light .end-node {
+  stroke: rgba(255, 255, 255, 0.9);
+  filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.6));
 }
 </style>

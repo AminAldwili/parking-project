@@ -24,7 +24,7 @@
         <span class="spot-state">{{ statusLabel }}</span>
       </div>
       <div class="spot-indicator">
-        <div class="indicator-pulse"></div>
+        <div class="indicator-glow"></div>
       </div>
     </div>
 
@@ -81,29 +81,6 @@ function onClick() {
 </script>
 
 <style scoped>
-/*
- * ============================================================================
- * ParkingSpot - Individual Parking Spot Component
- * ============================================================================
- * 
- * A single parking spot with status indicator and interaction states.
- * 
- * States:
- * - Free (green): Available for parking
- * - Occupied (red): Currently in use
- * 
- * Interactions:
- * - Hover: Elevation effect + tooltip
- * - Touch: Tap feedback + tooltip
- * - Click: Emits spot-click event for path drawing
- * 
- * Accessibility:
- * - Keyboard navigable (Enter/Space to select)
- * - ARIA labels for screen readers
- * 
- * ============================================================================
- */
-
 .parking-spot {
   position: relative;
   display: inline-block;
@@ -118,10 +95,12 @@ function onClick() {
   align-items: center;
   justify-content: center;
   gap: 4px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   user-select: none;
-  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    transform var(--duration-normal) var(--ease-out),
+    box-shadow var(--duration-normal) var(--ease-out);
 }
 
 .spot-inner {
@@ -135,16 +114,16 @@ function onClick() {
 
 .spot-id {
   font-size: clamp(0.9rem, 2.5vw, 1.1rem);
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.02em;
-  transition: transform 200ms ease;
+  transition: transform var(--duration-normal) var(--ease-out);
 }
 
 .spot-state {
   font-size: clamp(0.65rem, 1.8vw, 0.75rem);
   font-weight: 600;
   opacity: 0.85;
-  transition: opacity 200ms ease;
+  transition: opacity var(--duration-normal) var(--ease-out);
 }
 
 .spot-indicator {
@@ -154,15 +133,15 @@ function onClick() {
   width: clamp(8px, 2vw, 10px);
   height: clamp(8px, 2vw, 10px);
   border-radius: 50%;
-  transition: all 250ms ease;
+  transition: all var(--duration-normal) var(--ease-out);
 }
 
-.indicator-pulse {
+.indicator-glow {
   position: absolute;
   inset: 0;
   border-radius: 50%;
   opacity: 0;
-  transition: all 250ms ease;
+  transition: all var(--duration-normal) var(--ease-out);
 }
 
 .spot-card:hover .spot-id,
@@ -183,10 +162,9 @@ function onClick() {
   content: "";
   position: absolute;
   inset: -3px;
-  border-radius: 11px;
-  border: 2px solid var(--road-yellow);
-  box-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
-  animation: focus-pulse 1.5s ease-in-out infinite;
+  border-radius: calc(var(--radius-md) + 3px);
+  border: 2px solid var(--focus-ring);
+  box-shadow: 0 0 16px var(--focus-ring);
 }
 
 @keyframes focus-pulse {
@@ -200,74 +178,78 @@ function onClick() {
 }
 
 .is-free {
-  background: linear-gradient(145deg, var(--spot-free-bg), #15803d);
+  background: linear-gradient(145deg, var(--spot-free), #059669);
   color: #fff;
   box-shadow:
-    0 4px 16px rgba(34, 197, 94, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    var(--shadow-sm),
+    0 0 0 1px rgba(16, 185, 129, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .is-free .spot-indicator {
-  background: var(--spot-free);
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
 }
 
-.is-free .indicator-pulse {
+.is-free .indicator-glow {
   background: var(--spot-free);
 }
 
 .is-free:hover,
 .is-free:focus-visible,
 .is-free.is-hovered {
-  transform: translateY(-6px) scale(1.02);
+  transform: translateY(-4px) scale(1.02);
   box-shadow:
-    0 12px 32px rgba(34, 197, 94, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    var(--shadow-lg),
+    0 0 20px rgba(16, 185, 129, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .is-free:hover .spot-indicator,
 .is-free:focus-visible .spot-indicator {
-  box-shadow: 0 0 16px rgba(34, 197, 94, 0.9);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.8);
 }
 
-.is-free:hover .indicator-pulse,
-.is-free:focus-visible .indicator-pulse {
+.is-free:hover .indicator-glow,
+.is-free:focus-visible .indicator-glow {
   animation: indicator-blink 1s ease-in-out infinite;
 }
 
 .is-occupied {
-  background: linear-gradient(145deg, var(--spot-occupied-bg), #7f1d1d);
+  background: linear-gradient(145deg, var(--spot-occupied), #dc2626);
   color: #fff;
   box-shadow:
-    0 4px 16px rgba(239, 68, 68, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    var(--shadow-sm),
+    0 0 0 1px rgba(239, 68, 68, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .is-occupied .spot-indicator {
-  background: var(--spot-occupied);
+  background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
 }
 
-.is-occupied .indicator-pulse {
+.is-occupied .indicator-glow {
   background: var(--spot-occupied);
 }
 
 .is-occupied:hover,
 .is-occupied:focus-visible,
 .is-occupied.is-hovered {
-  transform: translateY(-6px) scale(1.02);
+  transform: translateY(-4px) scale(1.02);
   box-shadow:
-    0 12px 32px rgba(239, 68, 68, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    var(--shadow-lg),
+    0 0 20px rgba(239, 68, 68, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .is-occupied:hover .spot-indicator,
 .is-occupied:focus-visible .spot-indicator {
-  box-shadow: 0 0 16px rgba(239, 68, 68, 0.9);
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.8);
 }
 
-.is-occupied:hover .indicator-pulse,
-.is-occupied:focus-visible .indicator-pulse {
+.is-occupied:hover .indicator-glow,
+.is-occupied:focus-visible .indicator-glow {
   animation: indicator-blink 1s ease-in-out infinite;
 }
 
@@ -278,8 +260,8 @@ function onClick() {
     transform: scale(1);
   }
   50% {
-    opacity: 0.4;
-    transform: scale(1.8);
+    opacity: 0.5;
+    transform: scale(2);
   }
 }
 
@@ -294,7 +276,7 @@ function onClick() {
   border: 1px solid var(--glass-border);
   color: var(--road-white);
   font-size: var(--text-xs);
-  font-weight: 700;
+  font-weight: 600;
   white-space: nowrap;
   z-index: 60;
   pointer-events: none;
@@ -344,4 +326,35 @@ function onClick() {
   }
 }
 
+:root.light .is-free {
+  box-shadow:
+    0 4px 16px rgba(5, 150, 105, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+:root.light .is-free:hover,
+:root.light .is-free:focus-visible,
+:root.light .is-free.is-hovered {
+  box-shadow:
+    0 12px 32px rgba(5, 150, 105, 0.2),
+    0 4px 8px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+:root.light .is-occupied {
+  box-shadow:
+    0 4px 16px rgba(220, 38, 38, 0.12),
+    0 2px 4px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+:root.light .is-occupied:hover,
+:root.light .is-occupied:focus-visible,
+:root.light .is-occupied.is-hovered {
+  box-shadow:
+    0 12px 32px rgba(220, 38, 38, 0.18),
+    0 4px 8px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
 </style>

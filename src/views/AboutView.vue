@@ -3,7 +3,18 @@
     <div class="about-card">
       <div class="info-board">
         <div class="board-header">
-          <span class="board-icon">ℹ️</span>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="16" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12.01" y2="8" />
+          </svg>
           <span>About</span>
         </div>
         <div class="board-content">
@@ -23,11 +34,10 @@
               fill="none"
               stroke="currentColor"
               stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
             >
-              <path
-                d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"
-              />
-              <circle cx="12" cy="10" r="3" />
+              <polygon points="3 11 22 2 13 21 11 13 3 11" />
             </svg>
           </div>
           <h4>تتبع المسار</h4>
@@ -41,6 +51,8 @@
               fill="none"
               stroke="currentColor"
               stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
             >
               <rect x="3" y="3" width="18" height="18" rx="2" />
               <path d="M9 17V7h4a3 3 0 0 1 0 6H9" />
@@ -57,6 +69,8 @@
               fill="none"
               stroke="currentColor"
               stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
             >
               <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
               <polyline points="9,22 9,12 15,12 15,22" />
@@ -90,7 +104,7 @@
   padding: 24px;
   border-radius: 16px;
   background: var(--asphalt-light);
-  border: 1px solid rgba(245, 158, 11, 0.2);
+  border: 1px solid var(--aisle-border);
   margin-bottom: 28px;
 }
 
@@ -103,9 +117,9 @@
   height: 4px;
   background: linear-gradient(
     90deg,
-    var(--accent-orange),
-    var(--road-yellow),
-    var(--accent-orange)
+    var(--accent-primary),
+    var(--accent-secondary),
+    var(--accent-primary)
   );
   border-radius: 16px 16px 0 0;
 }
@@ -117,30 +131,32 @@
   margin-bottom: 12px;
   padding: 6px 14px;
   border-radius: 999px;
-  background: rgba(245, 158, 11, 0.15);
-  color: var(--accent-orange);
-  font-size: 0.8rem;
-  font-weight: 700;
+  background: var(--accent-glow);
+  color: var(--accent-primary);
+  font-size: var(--text-xs);
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
 
-.board-icon {
-  font-size: 0.9rem;
+.board-header svg {
+  width: 14px;
+  height: 14px;
 }
 
 .board-content h2 {
   margin: 0 0 12px;
-  font-size: 1.3rem;
-  font-weight: 800;
-  color: var(--road-white);
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.4;
 }
 
 .board-content p {
   margin: 0;
-  color: rgba(241, 245, 249, 0.65);
+  color: var(--text-secondary);
   line-height: 1.8;
-  font-size: 0.95rem;
+  font-size: var(--text-sm);
 }
 
 .features-grid {
@@ -155,13 +171,13 @@
   background: var(--asphalt-dark);
   border: 1px solid var(--glass-border);
   text-align: center;
-  transition: all 200ms ease;
+  transition: all var(--duration-normal) var(--ease-out);
 }
 
 .feature-item:hover {
   transform: translateY(-4px);
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  border-color: var(--aisle-border);
+  box-shadow: var(--shadow-md);
 }
 
 .feature-icon {
@@ -170,8 +186,8 @@
   margin: 0 auto 12px;
   padding: 10px;
   border-radius: 12px;
-  background: rgba(245, 158, 11, 0.1);
-  color: var(--accent-orange);
+  background: var(--accent-glow);
+  color: var(--accent-primary);
 }
 
 .feature-icon svg {
@@ -181,15 +197,15 @@
 
 .feature-item h4 {
   margin: 0 0 6px;
-  font-size: 1rem;
+  font-size: var(--text-md);
   font-weight: 700;
-  color: var(--road-white);
+  color: var(--text-primary);
 }
 
 .feature-item p {
   margin: 0;
-  font-size: 0.85rem;
-  color: rgba(241, 245, 249, 0.5);
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
 }
 
 @media (max-width: 768px) {

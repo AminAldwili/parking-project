@@ -1,9 +1,5 @@
 <template>
-  <div
-    ref="container"
-    class="floor-container"
-    role="region"
-  >
+  <div ref="container" class="floor-container" role="region">
     <div
       class="aisle-line"
       :style="{ left: aisleXPercent + '%' }"
@@ -175,25 +171,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/*
- * ============================================================================
- * ParkingFloor - Individual Floor Display
- * ============================================================================
- * 
- * Renders parking spots in a grid layout with an aisle line.
- * 
- * Layout Modes:
- * - Desktop: Absolute positioned spots in a grid
- * - Mobile (360px): Vertical stack layout for better touch interaction
- * 
- * Components:
- * - Aisle line: Central driving aisle visualization
- * - Group labels: Section markers (A, B, C)
- * - Spot wrappers: Individual parking spots
- * 
- * ============================================================================
- */
-
 .floor-container {
   position: relative;
   width: 100%;
@@ -201,6 +178,32 @@ onUnmounted(() => {
   overflow: hidden;
   padding: clamp(44px, 10vw, 56px) var(--space-lg) var(--space-lg);
   background: var(--asphalt-dark);
+}
+
+.floor-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: overlay;
+}
+
+.floor-container::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02) 0%,
+    transparent 30%,
+    transparent 70%,
+    rgba(0, 0, 0, 0.06) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
 }
 
 .spots-wrapper {
@@ -230,9 +233,13 @@ onUnmounted(() => {
   position: relative;
   width: 100%;
   height: 100%;
-  background: linear-gradient(180deg, #0a0a14, #12121f);
-  border-left: 1px solid rgba(251, 191, 36, 0.15);
-  border-right: 1px solid rgba(251, 191, 36, 0.15);
+  background: linear-gradient(
+    180deg,
+    var(--aisle-dark),
+    var(--asphalt-lighter)
+  );
+  border-left: 1px solid var(--aisle-border);
+  border-right: 1px solid var(--aisle-border);
 }
 
 .aisle-center-line {
@@ -245,8 +252,8 @@ onUnmounted(() => {
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    rgba(251, 191, 36, 0.2) 20%,
-    rgba(251, 191, 36, 0.2) 80%,
+    var(--aisle-line) 20%,
+    var(--aisle-line) 80%,
     transparent 100%
   );
 }
@@ -264,17 +271,29 @@ onUnmounted(() => {
   transform: translateX(-50%);
   min-width: clamp(30px, 8vw, 36px);
   text-align: center;
-  background: var(--road-yellow);
-  color: var(--asphalt-dark);
+  background: var(--accent-gold);
+  color: #000;
   padding: var(--space-2xs) var(--space-xs);
   border-radius: var(--radius-sm);
   font-weight: 800;
   font-size: var(--text-sm);
-  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+  box-shadow:
+    0 4px 20px var(--accent-gold-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition:
+    transform var(--duration-normal) var(--ease-out),
+    box-shadow var(--duration-normal) var(--ease-out);
+}
+
+.group-label:hover {
+  transform: translateX(-50%) scale(1.1);
+  box-shadow:
+    0 6px 28px var(--accent-gold-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .section-letter {
-  font-weight: 800;
+  font-weight: 700;
 }
 
 @media (max-width: 768px) {
