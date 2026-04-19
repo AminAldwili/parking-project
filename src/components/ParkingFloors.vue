@@ -140,13 +140,15 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, onUnmounted, nextTick } from "vue";
+import { ref, reactive, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
+import { useStore } from "vuex";
 import ParkingFloor from "@/components/ParkingFloor.vue";
 import PathDrawer from "@/components/PathDrawer.vue";
 
-function randomStatus() {
-  return Math.random() < 0.5 ? "occupied" : "free";
-}
+const store = useStore();
+
+const floor1SpotsFromStore = computed(() => store.getters.getFloor1Spots);
+const floor2SpotsFromStore = computed(() => store.getters.getFloor2Spots);
 
 function buildYPositions(count) {
   return Array.from(
@@ -163,38 +165,47 @@ const yPositions = buildYPositions(spotCount);
 const floor1Spots = reactive([]);
 const floor2Spots = reactive([]);
 
-yPositions.forEach((y, idx) => {
-  floor1Spots.push({
-    id: `A${idx + 1}`,
-    x: 75,
-    y,
-    section: "A",
-    status: randomStatus(),
-    size: { width: 130, height: 75 },
-  });
-});
+function updateSpotsFromStore() {
+  const floor1 = floor1SpotsFromStore.value;
+  const floor2 = floor2SpotsFromStore.value;
 
-yPositions.forEach((y, idx) => {
-  floor1Spots.push({
-    id: `B${idx + 1}`,
-    x: 25,
-    y,
-    section: "B",
-    status: randomStatus(),
-    size: { width: 130, height: 75 },
-  });
-});
+  floor1Spots.splice(0, floor1Spots.length);
+  floor2Spots.splice(0, floor2Spots.length);
 
-yPositions.forEach((y, idx) => {
-  floor2Spots.push({
-    id: `C${idx + 1}`,
-    x: 75,
-    y,
-    section: "C",
-    status: randomStatus(),
-    size: { width: 130, height: 75 },
+  Object.keys(floor1).forEach((spotId) => {
+    const section = spotId.charAt(0);
+    const idx = parseInt(spotId.replace(section, "")) - 1;
+    const x = section === "A" ? 75 : 25;
+    floor1Spots.push({
+      id: spotId,
+      x,
+      y: yPositions[idx],
+      section,
+      status: floor1[spotId] ?? 0,
+      size: { width: 130, height: 75 },
+    });
   });
-});
+
+  Object.keys(floor2).forEach((spotId) => {
+    const idx = parseInt(spotId.replace("C", "")) - 1;
+    floor2Spots.push({
+      id: spotId,
+      x: 75,
+      y: yPositions[idx],
+      section: "C",
+      status: floor2[spotId] ?? 0,
+      size: { width: 130, height: 75 },
+    });
+  });
+}
+
+watch(
+  () => [floor1SpotsFromStore.value, floor2SpotsFromStore.value],
+  () => {
+    updateSpotsFromStore();
+  },
+  { immediate: true, deep: true }
+);
 
 const container = ref(null);
 const rampConnector = ref(null);

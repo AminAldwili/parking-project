@@ -48,12 +48,19 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from "vue";
 
+const STATUS_MAP = {
+  0: { class: "is-free", label: "متاحة" },
+  1: { class: "is-occupied", label: "مشغولة" },
+  2: { class: "is-reserved", label: "محجوز" },
+  3: { class: "is-maintenance", label: "صيانة" }
+};
+
 const props = defineProps({
   spotId: { type: [String, Number], required: true },
   status: {
-    type: String,
-    default: "free",
-    validator: (v) => ["free", "occupied"].includes(v),
+    type: Number,
+    default: 0,
+    validator: (v) => [0, 1, 2, 3].includes(v),
   },
   position: { type: Object, default: () => ({ x: 0, y: 0 }) },
   size: { type: Object, default: () => ({ width: 130, height: 75 }) },
@@ -67,11 +74,11 @@ const spotRef = ref(null);
 const tooltipPosition = ref({ x: 0, y: 0 });
 
 const statusClass = computed(() => {
-  return props.status === "free" ? "is-free" : "is-occupied";
+  return STATUS_MAP[props.status]?.class || "is-free";
 });
 
 const statusLabel = computed(() => {
-  return props.status === "occupied" ? "مشغولة" : "متاحة";
+  return STATUS_MAP[props.status]?.label || "متاحة";
 });
 
 const spotStyle = computed(() => {
@@ -313,6 +320,82 @@ onUnmounted(() => {
   }
 }
 
+.is-reserved {
+  background: linear-gradient(145deg, var(--spot-reserved), #f97316);
+  color: #fff;
+  box-shadow:
+    var(--shadow-sm),
+    0 0 0 1px rgba(249, 115, 22, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.is-reserved .spot-indicator {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.6);
+}
+
+.is-reserved .indicator-glow {
+  background: var(--spot-reserved);
+}
+
+.is-reserved:hover,
+.is-reserved:focus-visible,
+.is-reserved.is-hovered {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow:
+    var(--shadow-lg),
+    0 0 20px rgba(249, 115, 22, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.is-reserved:hover .spot-indicator,
+.is-reserved:focus-visible .spot-indicator {
+  box-shadow: 0 0 16px rgba(249, 115, 22, 0.8);
+}
+
+.is-reserved:hover .indicator-glow,
+.is-reserved:focus-visible .indicator-glow {
+  animation: indicator-blink 1s ease-in-out infinite;
+}
+
+.is-maintenance {
+  background: linear-gradient(145deg, var(--spot-maintenance), #6b7280);
+  color: #fff;
+  box-shadow:
+    var(--shadow-sm),
+    0 0 0 1px rgba(107, 114, 128, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.is-maintenance .spot-indicator {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 8px rgba(107, 114, 128, 0.6);
+}
+
+.is-maintenance .indicator-glow {
+  background: var(--spot-maintenance);
+}
+
+.is-maintenance:hover,
+.is-maintenance:focus-visible,
+.is-maintenance.is-hovered {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow:
+    var(--shadow-lg),
+    0 0 20px rgba(107, 114, 128, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.is-maintenance:hover .spot-indicator,
+.is-maintenance:focus-visible .spot-indicator {
+  box-shadow: 0 0 16px rgba(107, 114, 128, 0.8);
+}
+
+.is-maintenance:hover .indicator-glow,
+.is-maintenance:focus-visible .indicator-glow {
+  animation: indicator-blink 1s ease-in-out infinite;
+}
+
 .spot-tooltip {
   padding: 6px 12px;
   border-radius: 6px;
@@ -387,6 +470,38 @@ onUnmounted(() => {
 :root.light .is-occupied.is-hovered {
   box-shadow:
     0 12px 32px rgba(220, 38, 38, 0.18),
+    0 4px 8px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+:root.light .is-reserved {
+  box-shadow:
+    0 4px 16px rgba(249, 115, 22, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+:root.light .is-reserved:hover,
+:root.light .is-reserved:focus-visible,
+:root.light .is-reserved.is-hovered {
+  box-shadow:
+    0 12px 32px rgba(249, 115, 22, 0.2),
+    0 4px 8px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+:root.light .is-maintenance {
+  box-shadow:
+    0 4px 16px rgba(107, 114, 128, 0.12),
+    0 2px 4px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+:root.light .is-maintenance:hover,
+:root.light .is-maintenance:focus-visible,
+:root.light .is-maintenance.is-hovered {
+  box-shadow:
+    0 12px 32px rgba(107, 114, 128, 0.18),
     0 4px 8px rgba(0, 0, 0, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
