@@ -1,8 +1,10 @@
 <template>
   <div
     class="parking-spot"
-    @mouseenter="isHover = true"
-    @mouseleave="isHover = false"
+    :data-spot-id="spotId"
+    ref="spotRef"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
   >
     <div
       class="spot-card"
@@ -28,16 +30,23 @@
       </div>
     </div>
 
-    <Transition name="tooltip-fade">
-      <div v-if="isHover || isTapped" class="spot-tooltip" aria-hidden="true">
-        {{ statusLabel }}
-      </div>
-    </Transition>
+    <Teleport to="body">
+      <Transition name="tooltip-fade">
+        <div
+          v-if="isHover || isTapped"
+          class="spot-tooltip"
+          :style="tooltipStyle"
+          aria-hidden="true"
+        >
+          {{ statusLabel }}
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 
 const props = defineProps({
   spotId: { type: [String, Number], required: true },
@@ -54,6 +63,8 @@ const emit = defineEmits(["spot-click"]);
 
 const isHover = ref(false);
 const isTapped = ref(false);
+const spotRef = ref(null);
+const tooltipPosition = ref({ x: 0, y: 0 });
 
 const statusClass = computed(() => {
   return props.status === "free" ? "is-free" : "is-occupied";
@@ -72,12 +83,49 @@ const spotStyle = computed(() => {
   };
 });
 
+const tooltipStyle = computed(() => {
+  const offset = 12;
+  return {
+    position: "fixed",
+    left: `${tooltipPosition.value.x}px`,
+    top: `${tooltipPosition.value.y + offset}px`,
+    transform: "translateX(-50%)",
+  };
+});
+
+function updateTooltipPosition() {
+  const el = spotRef.value;
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  tooltipPosition.value = {
+    x: rect.left + rect.width / 2,
+    y: rect.top + rect.height,
+  };
+}
+
+function handleMouseEnter() {
+  isHover.value = true;
+  updateTooltipPosition();
+}
+
+function handleMouseLeave() {
+  isHover.value = false;
+}
+
 function onClick() {
   emit("spot-click", {
     spotId: props.spotId,
     position: props.position,
   });
 }
+
+onMounted(() => {
+  window.addEventListener("resize", updateTooltipPosition);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", updateTooltipPosition);
+});
 </script>
 
 <style scoped>
@@ -266,10 +314,6 @@ function onClick() {
 }
 
 .spot-tooltip {
-  position: absolute;
-  bottom: -12px;
-  left: 50%;
-  transform: translateX(-50%) translateY(100%);
   padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-sm);
   background: var(--asphalt-dark);
@@ -278,7 +322,7 @@ function onClick() {
   font-size: var(--text-xs);
   font-weight: 600;
   white-space: nowrap;
-  z-index: 60;
+  z-index: 9999;
   pointer-events: none;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
@@ -295,13 +339,13 @@ function onClick() {
 
 .tooltip-fade-enter-active,
 .tooltip-fade-leave-active {
-  transition: all 200ms ease;
+  transition: opacity 200ms ease, transform 200ms ease;
 }
 
 .tooltip-fade-enter-from,
 .tooltip-fade-leave-to {
   opacity: 0;
-  transform: translateX(-50%) translateY(90%);
+  transform: translateX(-50%) translateY(8px);
 }
 
 @media (max-width: 768px) {
