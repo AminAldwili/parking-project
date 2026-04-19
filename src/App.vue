@@ -98,8 +98,12 @@ watch(
 
   --spot-free: #10b981;
   --spot-occupied: #ef4444;
+  --spot-reserved: #f97316;
+  --spot-maintenance: #6b7280;
   --spot-free-bg: rgba(16, 185, 129, 0.12);
   --spot-occupied-bg: rgba(239, 68, 68, 0.12);
+  --spot-reserved-bg: rgba(249, 115, 22, 0.12);
+  --spot-maintenance-bg: rgba(107, 114, 128, 0.12);
 
   --accent-primary: #0ea5e9;
   --accent-secondary: #06b6d4;
@@ -210,8 +214,12 @@ watch(
 
   --spot-free: #059669;
   --spot-occupied: #dc2626;
+  --spot-reserved: #ea580c;
+  --spot-maintenance: #4b5563;
   --spot-free-bg: rgba(5, 150, 105, 0.1);
   --spot-occupied-bg: rgba(220, 38, 38, 0.1);
+  --spot-reserved-bg: rgba(234, 88, 12, 0.1);
+  --spot-maintenance-bg: rgba(75, 85, 99, 0.1);
 
   --accent-primary: #0284c7;
   --accent-secondary: #0891b2;
