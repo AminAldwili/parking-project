@@ -314,27 +314,16 @@ onUnmounted(() => {
 }
 
 .spot-tooltip {
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  border-radius: 6px;
   background: var(--asphalt-dark);
-  border: 1px solid var(--glass-border);
   color: var(--road-white);
-  font-size: var(--text-xs);
+  font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
   z-index: 9999;
   pointer-events: none;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-}
-
-.spot-tooltip::before {
-  content: "";
-  position: absolute;
-  top: calc(-1 * var(--space-2xs));
-  left: 50%;
-  transform: translateX(-50%);
-  border: 6px solid transparent;
-  border-bottom-color: var(--asphalt-dark);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
 
 .tooltip-fade-enter-active,
