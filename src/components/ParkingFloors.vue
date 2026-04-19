@@ -118,11 +118,7 @@
                 المدخل المرجعي للمسار موجود أسفل المنتصف
               </p>
             </div>
-            <div class="route-origin-pill">
-              <span class="route-origin-dot"></span>
-              نقطة الدخول
             </div>
-          </div>
           <div class="route-origin-anchor" aria-hidden="true"></div>
           <ParkingFloor
             :floor="1"
@@ -132,6 +128,12 @@
             @request-path="handleRequestPath"
           />
         </section>
+      </div>
+    </div>
+    <div class="entry-point-container">
+      <div class="route-origin-pill">
+        <span class="route-origin-dot"></span>
+        نقطة الدخول
       </div>
     </div>
   </div>
@@ -359,7 +361,6 @@ onUnmounted(() => {
 .parking-floors {
   width: 100%;
   position: relative;
-  padding-bottom: 28px;
 }
 
 .parking-shell {
@@ -840,5 +841,11 @@ onUnmounted(() => {
   .ramp-wrapper {
     width: min(200px, 85vw);
   }
+}
+
+.entry-point-container {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-md) 0;
 }
 </style>
