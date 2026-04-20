@@ -8,7 +8,7 @@
   >
     <div
       class="spot-card"
-      :class="[statusClass, { 'is-hovered': isHover || isTapped }]"
+      :class="[statusClass, { 'is-hovered': isHover || isTapped, 'is-active': isActive }]"
       :style="spotStyle"
       role="button"
       tabindex="0"
@@ -62,6 +62,7 @@ const props = defineProps({
     default: 0,
     validator: (v) => [0, 1, 2, 3].includes(v),
   },
+  isActive: { type: Boolean, default: false },
   position: { type: Object, default: () => ({ x: 0, y: 0 }) },
   size: { type: Object, default: () => ({ width: 130, height: 75 }) },
 });
@@ -504,5 +505,39 @@ onUnmounted(() => {
     0 12px 32px rgba(107, 114, 128, 0.18),
     0 4px 8px rgba(0, 0, 0, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.spot-card.is-active {
+  animation: spot-active-pulse 1.5s ease-in-out infinite;
+  box-shadow:
+    0 0 20px rgba(14, 165, 233, 0.6),
+    0 0 40px rgba(14, 165, 233, 0.3);
+}
+
+.spot-card.is-active::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: calc(var(--radius-md) + 4px);
+  border: 2px solid var(--accent-primary);
+  animation: spot-active-ring 1.5s ease-in-out infinite;
+}
+
+@keyframes spot-active-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes spot-active-ring {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 </style>

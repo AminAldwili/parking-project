@@ -44,6 +44,7 @@
             :floor="2"
             :spots-prop="floor2Spots"
             :aisle-x-percent="aisleXPercent"
+            :active-spot-id="activeSpotId"
             @floor-resize="handleFloorResize"
             @request-path="handleRequestPath"
           />
@@ -124,6 +125,7 @@
             :floor="1"
             :spots-prop="floor1Spots"
             :aisle-x-percent="aisleXPercent"
+            :active-spot-id="activeSpotId"
             @floor-resize="handleFloorResize"
             @request-path="handleRequestPath"
           />
@@ -218,6 +220,41 @@ const rampRect = ref(null);
 const clearTimer = ref(null);
 const resizeObserver = ref(null);
 const floorWidths = reactive({ 1: 0, 2: 0 });
+const activeSpotId = ref(null);
+
+function scrollToSpot(spotId) {
+  if (!spotId) return;
+
+  activeSpotId.value = spotId;
+
+  const prefix = spotId.charAt(0).toUpperCase();
+  const targetFloor = (prefix === "A" || prefix === "B") ? 1 : 2;
+
+  nextTick(() => {
+    const floorBox = targetFloor === 1 ? firstFloorBox.value : secondFloorBox.value;
+    if (floorBox) {
+      floorBox.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    setTimeout(() => {
+      const spotData = targetFloor === 1
+        ? floor1Spots.find(s => s.id === spotId)
+        : floor2Spots.find(s => s.id === spotId);
+
+      if (spotData) {
+        const floorElement = targetFloor === 1 ? firstFloorBox.value : secondFloorBox.value;
+        handleRequestPath({
+          floor: targetFloor,
+          floorRect: floorElement?.getBoundingClientRect(),
+          spotCenter: { x: spotData.x, y: spotData.y },
+          aisleXPercent: aisleXPercent
+        });
+      }
+    }, 800);
+  });
+}
+
+defineExpose({ scrollToSpot });
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));

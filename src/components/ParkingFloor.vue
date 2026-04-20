@@ -30,6 +30,7 @@
         <ParkingSpot
           :spot-id="spot.id"
           :status="spot.status"
+          :is-active="activeSpotId === spot.id"
           :position="{ x: spot.x, y: spot.y }"
           :size="spot.size"
           @spot-click="onSpotClick"
@@ -47,6 +48,7 @@ const props = defineProps({
   floor: { type: [String, Number], default: 1 },
   spotsProp: { type: Array, default: null },
   aisleXPercent: { type: Number, default: 50 },
+  activeSpotId: { type: String, default: null },
 });
 
 const emit = defineEmits(["request-path", "floor-resize"]);
