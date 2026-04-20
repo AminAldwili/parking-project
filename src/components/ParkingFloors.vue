@@ -257,20 +257,30 @@ function scrollToSpot(spotId) {
     }
 
     setTimeout(() => {
-      const spotData = targetFloor === 1
-        ? floor1Spots.find(s => s.id === spotId)
-        : floor2Spots.find(s => s.id === spotId);
+      const floorElement = targetFloor === 1 ? firstFloorBox.value : secondFloorBox.value;
+      if (!floorElement) return;
 
-      if (spotData) {
-        const floorElement = targetFloor === 1 ? firstFloorBox.value : secondFloorBox.value;
-        handleRequestPath({
-          floor: targetFloor,
-          floorRect: floorElement?.getBoundingClientRect(),
-          spotCenter: { x: spotData.x, y: spotData.y },
-          aisleXPercent: aisleXPercent
-        });
-      }
-    }, 800);
+      const spotWrapper = floorElement.querySelector(`[data-spot-id="${spotId}"]`);
+      if (!spotWrapper) return;
+
+      const spotCard = spotWrapper.querySelector('.spot-card');
+      if (!spotCard) return;
+
+      const floorRect = floorElement.getBoundingClientRect();
+      const spotRect = spotCard.getBoundingClientRect();
+
+      const spotCenter = {
+        x: spotRect.left - floorRect.left + spotRect.width / 2,
+        y: spotRect.top - floorRect.top + spotRect.height / 2,
+      };
+
+      handleRequestPath({
+        floor: targetFloor,
+        floorRect: floorRect,
+        spotCenter: spotCenter,
+        aisleXPercent: aisleXPercent
+      });
+    }, 1000);
   });
 }
 
