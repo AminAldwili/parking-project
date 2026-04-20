@@ -85,16 +85,30 @@
 </template>
 
 <script>
+import { useSpotFromUrl } from "@/composables/useSpotFromUrl";
 import ParkingFloors from "@/components/ParkingFloors.vue";
 
 export default {
   name: "HomeView",
   components: { ParkingFloors },
+  setup() {
+    const { cleanSpotId, hasSlotParam } = useSpotFromUrl();
+    return { cleanSpotId, hasSlotParam };
+  },
   mounted() {
     this.$nextTick(() => {
-      const floors = this.$refs.floors?.$el;
-      if (floors && floors.scrollIntoView) {
-        floors.scrollIntoView({ behavior: "smooth", block: "end" });
+      if (this.hasSlotParam && this.cleanSpotId) {
+        setTimeout(() => {
+          const floorsComponent = this.$refs.floors;
+          if (floorsComponent?.scrollToSpot) {
+            floorsComponent.scrollToSpot(this.cleanSpotId);
+          }
+        }, 1000);
+      } else {
+        const floors = this.$refs.floors?.$el;
+        if (floors && floors.scrollIntoView) {
+          floors.scrollIntoView({ behavior: "smooth", block: "end" });
+        }
       }
     });
   },
