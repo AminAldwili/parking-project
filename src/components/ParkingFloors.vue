@@ -222,6 +222,26 @@ const resizeObserver = ref(null);
 const floorWidths = reactive({ 1: 0, 2: 0 });
 const activeSpotId = ref(null);
 
+watch(activeSpotId, (newSpotId) => {
+  if (!newSpotId) return;
+
+  setTimeout(() => {
+    const prefix = newSpotId.charAt(0).toUpperCase();
+    const isTopFloor = prefix === "C";
+    const spots = isTopFloor ? floor2Spots : floor1Spots;
+    const spotData = spots.find(s => s.id === newSpotId);
+
+    if (spotData && spotData.status !== 2) {
+      activeSpotId.value = null;
+      if (clearTimer.value) {
+        clearTimeout(clearTimer.value);
+        clearTimer.value = null;
+      }
+      activePath.value = null;
+    }
+  }, 500);
+});
+
 function scrollToSpot(spotId) {
   if (!spotId) return;
 
