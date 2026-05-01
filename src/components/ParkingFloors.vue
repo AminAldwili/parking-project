@@ -146,12 +146,45 @@ import { ref, reactive, computed, onMounted, onUnmounted, nextTick, watch } from
 import { useStore } from "vuex";
 import ParkingFloor from "@/components/ParkingFloor.vue";
 import PathDrawer from "@/components/PathDrawer.vue";
+import {
+  AISLE_X_PERCENT,
+  PATH_TIMEOUT_MS,
+  SPOT_MIN_WIDTH,
+  SPOT_MIN_HEIGHT,
+  SPOT_MAX_WIDTH,
+  SPOT_MAX_HEIGHT,
+  SPOT_STATUS,
+  SPOT_DEFAULT_WIDTH,
+  SPOT_DEFAULT_HEIGHT
+} from "@/constants";
 
+/**
+ * Main parking layout component.
+ * Combines two floors with a connecting ramp and path navigation.
+ *
+ * @component
+ * @example
+ * <ParkingFloors />
+ */
 const store = useStore();
 
+/**
+ * Floor 1 spots from Vuex store
+ * @type {import('vue').ComputedRef<Object>}
+ */
 const floor1SpotsFromStore = computed(() => store.getters.getFloor1Spots);
+
+/**
+ * Floor 2 spots from Vuex store
+ * @type {import('vue').ComputedRef<Object>}
+ */
 const floor2SpotsFromStore = computed(() => store.getters.getFloor2Spots);
 
+/**
+ * Builds evenly-spaced Y positions for spots.
+ * @param {number} count - Number of positions
+ * @returns {number[]} Array of percentage positions
+ */
 function buildYPositions(count) {
   return Array.from(
     { length: count },
@@ -159,14 +192,28 @@ function buildYPositions(count) {
   ).reverse();
 }
 
-const aisleXPercent = 50;
+const aisleXPercent = AISLE_X_PERCENT;
 
 const spotCount = 5;
 const yPositions = buildYPositions(spotCount);
 
+/**
+ * Reactive spots array for floor 1 (A & B sections)
+ * @type {import('vue').Reactive<Array>}
+ */
 const floor1Spots = reactive([]);
+
+/**
+ * Reactive spots array for floor 2 (C section)
+ * @type {import('vue').Reactive<Array>}
+ */
 const floor2Spots = reactive([]);
 
+/**
+ * Updates spots from Vuex store to local reactive arrays.
+ * Converts store object format to array format for v-for rendering.
+ * @returns {void}
+ */
 function updateSpotsFromStore() {
   const floor1 = floor1SpotsFromStore.value;
   const floor2 = floor2SpotsFromStore.value;
@@ -183,8 +230,8 @@ function updateSpotsFromStore() {
       x,
       y: yPositions[idx],
       section,
-      status: floor1[spotId] ?? 0,
-      size: { width: 130, height: 75 },
+      status: floor1[spotId] ?? SPOT_STATUS.FREE,
+      size: { width: SPOT_DEFAULT_WIDTH, height: SPOT_DEFAULT_HEIGHT },
     });
   });
 
@@ -195,12 +242,15 @@ function updateSpotsFromStore() {
       x: 75,
       y: yPositions[idx],
       section: "C",
-      status: floor2[spotId] ?? 0,
-      size: { width: 130, height: 75 },
+      status: floor2[spotId] ?? SPOT_STATUS.FREE,
+      size: { width: SPOT_DEFAULT_WIDTH, height: SPOT_DEFAULT_HEIGHT },
     });
   });
 }
 
+/**
+ * Watch for store changes and update local spots
+ */
 watch(
   () => [floor1SpotsFromStore.value, floor2SpotsFromStore.value],
   () => {
@@ -209,17 +259,70 @@ watch(
   { immediate: true, deep: true }
 );
 
+/**
+ * Main container element reference
+ * @type {import('vue').Ref<HTMLElement|null>}
+ */
 const container = ref(null);
+
+/**
+ * Ramp connector element reference
+ * @type {import('vue').Ref<HTMLElement|null>}
+ */
 const rampConnector = ref(null);
+
+/**
+ * Floor 1 container reference
+ * @type {import('vue').Ref<HTMLElement|null>}
+ */
 const firstFloorBox = ref(null);
+
+/**
+ * Floor 2 container reference
+ * @type {import('vue').Ref<HTMLElement|null>}
+ */
 const secondFloorBox = ref(null);
 
+/**
+ * Container dimensions for path calculation
+ * @type {import('vue').Ref<{width: number, height: number}>}
+ */
 const containerSize = ref({ width: 0, height: 0 });
+
+/**
+ * Active path data for PathDrawer
+ * @type {import('vue').Ref<Object|null>}
+ */
 const activePath = ref(null);
+
+/**
+ * Ramp element bounding rect
+ * @type {import('vue').Ref<DOMRect|null>}
+ */
 const rampRect = ref(null);
+
+/**
+ * Timer reference for path auto-clear
+ * @type {import('vue').Ref<number|null>}
+ */
 const clearTimer = ref(null);
+
+/**
+ * ResizeObserver for responsive calculations
+ * @type {import('vue').Ref<ResizeObserver|null>}
+ */
 const resizeObserver = ref(null);
+
+/**
+ * Floor width measurements for spot sizing
+ * @type {import('vue').Reactive<{1: number, 2: number}>}
+ */
 const floorWidths = reactive({ 1: 0, 2: 0 });
+
+/**
+ * Currently active/selected spot ID
+ * @type {import('vue').Ref<string|null>}
+ */
 const activeSpotId = ref(null);
 
 watch(activeSpotId, (newSpotId) => {
@@ -231,7 +334,7 @@ watch(activeSpotId, (newSpotId) => {
     const spots = isTopFloor ? floor2Spots : floor1Spots;
     const spotData = spots.find(s => s.id === newSpotId);
 
-    if (spotData && spotData.status !== 2) {
+    if (spotData && spotData.status !== SPOT_STATUS.RESERVED) {
       activeSpotId.value = null;
       if (clearTimer.value) {
         clearTimeout(clearTimer.value);
@@ -302,8 +405,8 @@ function getFluidSpotSize(floorWidth) {
     Number.isFinite(floorWidth) && floorWidth > 0
       ? floorWidth
       : window.innerWidth;
-  const spotWidth = clamp(Math.round(baseWidth * 0.28), 64, 130);
-  const spotHeight = clamp(Math.round(spotWidth * 0.58), 42, 75);
+  const spotWidth = clamp(Math.round(baseWidth * 0.28), SPOT_MIN_WIDTH, SPOT_MAX_WIDTH);
+  const spotHeight = clamp(Math.round(spotWidth * 0.58), SPOT_MIN_HEIGHT, SPOT_MAX_HEIGHT);
   return { width: spotWidth, height: spotHeight };
 }
 
@@ -316,6 +419,11 @@ function updateContainerSize() {
   });
 }
 
+/**
+ * Updates spot sizes based on floor width measurements.
+ * Calls measureFloorWidths if not already measured.
+ * @returns {void}
+ */
 function updateSpotSizes() {
   if (!floorWidths[1] || !floorWidths[2]) {
     measureFloorWidths();
@@ -323,6 +431,10 @@ function updateSpotSizes() {
   applySpotSizes();
 }
 
+/**
+ * Applies calculated fluid sizes to all spots.
+ * @returns {void}
+ */
 function applySpotSizes() {
   const floor1Size = getFluidSpotSize(floorWidths[1]);
   const floor2Size = getFluidSpotSize(floorWidths[2]);
@@ -334,12 +446,23 @@ function applySpotSizes() {
   });
 }
 
+/**
+ * Handler for floor-resize event from ParkingFloor.
+ * Updates floor width tracking only - spot sizes are calculated
+ * by ResizeObserver and window resize handlers to avoid circular loops.
+ * @param {Object} payload - Event payload
+ * @returns {void}
+ */
 function handleFloorResize(payload) {
   if (!payload?.floor || !payload?.rect?.width) return;
   floorWidths[Number(payload.floor)] = payload.rect.width;
-  updateSpotSizes();
 }
 
+/**
+ * Window resize handler.
+ * Updates all measurements on resize.
+ * @returns {void}
+ */
 function handleWindowResize() {
   updateContainerSize();
   updateRampRect();
@@ -347,6 +470,10 @@ function handleWindowResize() {
   updateSpotSizes();
 }
 
+/**
+ * Updates ramp connector bounding rect.
+ * @returns {void}
+ */
 function updateRampRect() {
   nextTick(() => {
     const ramp = rampConnector.value;
@@ -356,6 +483,12 @@ function updateRampRect() {
   });
 }
 
+/**
+ * Calculates path coordinates and sets active path.
+ * Path: L-shape from entry point to clicked spot.
+ * @param {Object} payload - Path request payload
+ * @returns {void}
+ */
 function handleRequestPath(payload) {
   if (!containerSize.value.width || !containerSize.value.height) {
     updateContainerSize();
@@ -402,7 +535,7 @@ function handleRequestPath(payload) {
   clearTimer.value = setTimeout(() => {
     activePath.value = null;
     clearTimer.value = null;
-  }, 5000);
+  }, PATH_TIMEOUT_MS);
 }
 
 onMounted(() => {

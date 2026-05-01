@@ -1,0 +1,123 @@
+/**
+ * Application Constants
+ * Centralized configuration values for the Parking System
+ * Avoids magic numbers scattered across components
+ */
+
+// ============================================================================
+// Path Navigation
+// ============================================================================
+
+/** Time in ms before path auto-clears */
+export const PATH_TIMEOUT_MS = 5000
+
+/** Center aisle position as percentage (50 = middle) */
+export const AISLE_X_PERCENT = 50
+
+// ============================================================================
+// Spot Dimensions (pixels)
+// ============================================================================
+
+export const SPOT_DEFAULT_WIDTH = 130
+export const SPOT_DEFAULT_HEIGHT = 75
+
+/** Minimum spot size for responsive scaling */
+export const SPOT_MIN_WIDTH = 64
+export const SPOT_MIN_HEIGHT = 42
+
+/** Maximum spot size for responsive scaling */
+export const SPOT_MAX_WIDTH = 130
+export const SPOT_MAX_HEIGHT = 75
+
+// ============================================================================
+// Spot Status Codes
+// ============================================================================
+
+export const SPOT_STATUS = {
+  FREE: 0,
+  OCCUPIED: 1,
+  RESERVED: 2,
+  MAINTENANCE: 3
+}
+
+/** Status label mapping - Arabic */
+export const SPOT_LABELS = {
+  [SPOT_STATUS.FREE]: 'متاحة',
+  [SPOT_STATUS.OCCUPIED]: 'مشغولة',
+  [SPOT_STATUS.RESERVED]: 'محجوز',
+  [SPOT_STATUS.MAINTENANCE]: 'صيانة'
+}
+
+/** Status CSS class mapping */
+export const SPOT_CLASSES = {
+  [SPOT_STATUS.FREE]: 'is-free',
+  [SPOT_STATUS.OCCUPIED]: 'is-occupied',
+  [SPOT_STATUS.RESERVED]: 'is-reserved',
+  [SPOT_STATUS.MAINTENANCE]: 'is-maintenance'
+}
+
+// ============================================================================
+// Colors
+// ============================================================================
+
+export const COLORS = {
+  // Path gradient
+  PATH_GRADIENT_START: '#f59e0b',
+  PATH_GRADIENT_END: '#fbbf24',
+
+  // Path glow
+  PATH_GLOW_COLOR: 'rgba(245, 158, 11, 0.7)',
+  PATH_END_GLOW: 'rgba(251, 191, 36, 0.7)',
+
+  // Node colors
+  NODE_START: '#f59e0b',
+  NODE_END: '#fbbf24',
+  NODE_STROKE: 'rgba(255, 255, 255, 0.8)'
+}
+
+// ============================================================================
+// Responsive Breakpoints
+// ============================================================================
+
+export const BREAKPOINTS = {
+  MOBILE: 480,
+  TABLET: 768,
+  DESKTOP: 1024
+}
+
+// ============================================================================
+// Animation Durations (ms)
+// ============================================================================
+
+export const ANIMATION = {
+  FADE_IN: 400,
+  RAMP_FADE_IN: 300,
+  POP_IN: 300,
+  TOOLTIP: 200,
+  SPOT_PULSE: 1500,
+  REDUCED: 0
+}
+
+// ============================================================================
+// Floor Configuration
+// ============================================================================
+
+export const FLOOR_CONFIG = {
+  SPOTS_PER_ROW: 5,
+  ROWS_PER_FLOOR: 3,
+
+  /** Section names per floor */
+  FLOOR_1_SECTIONS: ['A', 'B'],
+  FLOOR_2_SECTIONS: ['C']
+}
+
+// ============================================================================
+// Firebase Keys
+// ============================================================================
+
+export const FIREBASE_PATHS = {
+  GARAGE_ROOT: 'Garage',
+  FLOOR_1: 'Floor1',
+  FLOOR_2: 'Floor2',
+  FLOOR_3: 'Floor3'
+}

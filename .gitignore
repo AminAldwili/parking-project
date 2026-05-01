@@ -4,6 +4,7 @@ node_modules
 
 
 # local env files
+.env
 .env.local
 .env.*.local
 
@@ -28,4 +29,11 @@ tmp-responsive-check/
 tmp-*/
 tmp-*.log
 tmp-*.png
+tmp-serve-*.log
 report-*.json
+
+# Firebase CLI cache
+.firebase/
+
+# Local development files
+todoList.md

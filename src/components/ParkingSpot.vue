@@ -47,41 +47,120 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from "vue";
+import {
+  SPOT_STATUS,
+  SPOT_LABELS,
+  SPOT_CLASSES,
+  SPOT_DEFAULT_WIDTH,
+  SPOT_DEFAULT_HEIGHT
+} from "@/constants";
 
-const STATUS_MAP = {
-  0: { class: "is-free", label: "متاحة" },
-  1: { class: "is-occupied", label: "مشغولة" },
-  2: { class: "is-reserved", label: "محجوز" },
-  3: { class: "is-maintenance", label: "صيانة" }
-};
-
+/**
+ * Individual parking spot component.
+ * Displays a single parking spot with status, hover tooltip, and click interaction.
+ *
+ * @component
+ * @example
+ * <ParkingSpot spot-id="A1" :status="0" :position="{x: 25, y: 50}" />
+ */
 const props = defineProps({
+  /**
+   * Unique identifier for the parking spot
+   * @type {string|number}
+   */
   spotId: { type: [String, Number], required: true },
+
+  /**
+   * Current status of the spot
+   * 0 = Free/Available (green)
+   * 1 = Occupied (red)
+   * 2 = Reserved (orange)
+   * 3 = Maintenance (gray)
+   * @type {number}
+   * @default SPOT_STATUS.FREE
+   */
   status: {
     type: Number,
-    default: 0,
-    validator: (v) => [0, 1, 2, 3].includes(v),
+    default: SPOT_STATUS.FREE,
+    validator: (v) => Object.values(SPOT_STATUS).includes(v),
   },
+
+  /**
+   * Whether this spot is currently active/selected
+   * @type {boolean}
+   * @default false
+   */
   isActive: { type: Boolean, default: false },
+
+  /**
+   * Position as percentage within the floor
+   * @type {{x: number, y: number}}
+   * @default {x: 0, y: 0}
+   */
   position: { type: Object, default: () => ({ x: 0, y: 0 }) },
-  size: { type: Object, default: () => ({ width: 130, height: 75 }) },
+
+  /**
+   * Size of the spot in pixels
+   * @type {{width: number, height: number}}
+   */
+  size: {
+    type: Object,
+    default: () => ({ width: SPOT_DEFAULT_WIDTH, height: SPOT_DEFAULT_HEIGHT })
+  },
 });
 
+/**
+ * Emitted when the spot is clicked
+ * @event spot-click
+ * @property {string|number} spotId - The spot's unique ID
+ * @property {object} position - The spot's position {x, y}
+ */
 const emit = defineEmits(["spot-click"]);
 
+/**
+ * Tracks hover state for tooltip display
+ * @type {import('vue').Ref<boolean>}
+ */
 const isHover = ref(false);
+
+/**
+ * Tracks touch state for mobile devices
+ * @type {import('vue').Ref<boolean>}
+ */
 const isTapped = ref(false);
+
+/**
+ * Reference to the spot DOM element
+ * @type {import('vue').Ref<HTMLElement|null>}
+ */
 const spotRef = ref(null);
+
+/**
+ * Position for the floating tooltip
+ * @type {import('vue').Ref<{x: number, y: number}>}
+ */
 const tooltipPosition = ref({ x: 0, y: 0 });
 
+/**
+ * Computed CSS class based on spot status
+ * @type {import('vue').ComputedRef<string>}
+ */
 const statusClass = computed(() => {
-  return STATUS_MAP[props.status]?.class || "is-free";
+  return SPOT_CLASSES[props.status] || SPOT_CLASSES[SPOT_STATUS.FREE];
 });
 
+/**
+ * Human-readable status label (Arabic)
+ * @type {import('vue').ComputedRef<string>}
+ */
 const statusLabel = computed(() => {
-  return STATUS_MAP[props.status]?.label || "متاحة";
+  return SPOT_LABELS[props.status] || SPOT_LABELS[SPOT_STATUS.FREE];
 });
 
+/**
+ * Inline styles for the spot element
+ * @type {import('vue').ComputedRef<{width: string, height: string}>}
+ */
 const spotStyle = computed(() => {
   const w = props.size.width;
   const h = props.size.height;
@@ -91,6 +170,10 @@ const spotStyle = computed(() => {
   };
 });
 
+/**
+ * Position styles for the tooltip (teleported to body)
+ * @type {import('vue').ComputedRef<{position: string, left: string, top: string, transform: string}>}
+ */
 const tooltipStyle = computed(() => {
   const offset = 12;
   return {
@@ -101,6 +184,11 @@ const tooltipStyle = computed(() => {
   };
 });
 
+/**
+ * Updates tooltip position based on spot element's position in viewport.
+ * Called on mouseenter and window resize.
+ * @returns {void}
+ */
 function updateTooltipPosition() {
   const el = spotRef.value;
   if (!el) return;
@@ -111,15 +199,27 @@ function updateTooltipPosition() {
   };
 }
 
+/**
+ * Mouse enter handler - shows tooltip
+ * @returns {void}
+ */
 function handleMouseEnter() {
   isHover.value = true;
   updateTooltipPosition();
 }
 
+/**
+ * Mouse leave handler - hides tooltip
+ * @returns {void}
+ */
 function handleMouseLeave() {
   isHover.value = false;
 }
 
+/**
+ * Click handler - emits spot-click event
+ * @returns {void}
+ */
 function onClick() {
   emit("spot-click", {
     spotId: props.spotId,
@@ -127,6 +227,7 @@ function onClick() {
   });
 }
 
+// Cleanup listeners on component unmount
 onMounted(() => {
   window.addEventListener("resize", updateTooltipPosition);
 });

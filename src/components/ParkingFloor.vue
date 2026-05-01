@@ -43,21 +43,87 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick } from "vue";
 import ParkingSpot from "@/components/ParkingSpot.vue";
+import {
+  AISLE_X_PERCENT,
+  SPOT_DEFAULT_WIDTH,
+  SPOT_DEFAULT_HEIGHT,
+  FLOOR_CONFIG,
+  SPOT_STATUS
+} from "@/constants";
 
+/**
+ * Single floor component containing parking spots.
+ * Displays a grid of spots with a central aisle.
+ *
+ * @component
+ * @example
+ * <ParkingFloor :floor="1" :aisle-x-percent="50" />
+ */
 const props = defineProps({
+  /**
+   * Floor number identifier
+   * @type {string|number}
+   * @default 1
+   */
   floor: { type: [String, Number], default: 1 },
+
+  /**
+   * Array of spot objects (from Vuex store)
+   * If not provided, generates default spots
+   * @type {Array|null}
+   */
   spotsProp: { type: Array, default: null },
-  aisleXPercent: { type: Number, default: 50 },
+
+  /**
+   * Position of central aisle as percentage (50 = middle)
+   * @type {number}
+   * @default AISLE_X_PERCENT
+   */
+  aisleXPercent: { type: Number, default: AISLE_X_PERCENT },
+
+  /**
+   * Currently active/selected spot ID
+   * @type {string|null}
+   */
   activeSpotId: { type: String, default: null },
 });
 
+/**
+ * Events emitted by this component
+ * @event request-path - Called when a spot is clicked, emits path data
+ * @event floor-resize - Called when floor dimensions change
+ */
 const emit = defineEmits(["request-path", "floor-resize"]);
 
+/**
+ * Reference to floor container element
+ * @type {import('vue').Ref<HTMLElement|null>}
+ */
 const container = ref(null);
+
+/**
+ * Array of spots on this floor
+ * @type {import('vue').Ref<Array>}
+ */
 const spots = ref([]);
+
+/**
+ * ResizeObserver for responsive updates
+ * @type {import('vue').Ref<ResizeObserver|null>}
+ */
 const resizeObserver = ref(null);
+
+/**
+ * Map of spot element references by ID
+ * @type {import('vue').Ref<Object>}
+ */
 const spotRefs = ref({});
 
+/**
+ * List of section groups (A, B, or C)
+ * Used to display section labels
+ * @type {import('vue').ComputedRef<Array>}
+ */
 const groupList = computed(() => {
   const map = {};
   spots.value.forEach((s) => {
@@ -67,6 +133,13 @@ const groupList = computed(() => {
   return Object.values(map);
 });
 
+/**
+ * Sets a reference to a spot element.
+ * Used to calculate click positions.
+ * @param {string} id - Spot ID
+ * @param {HTMLElement|null} el - DOM element
+ * @returns {void}
+ */
 function setSpotRef(id, el) {
   if (el) {
     spotRefs.value[id] = el;
@@ -75,33 +148,47 @@ function setSpotRef(id, el) {
   }
 }
 
+/**
+ * Generates default spot layout when spotsProp is not provided.
+ * Creates a 5x3 grid with sections A/B for floor 1, C for floor 2.
+ * @returns {Array} Array of spot configuration objects
+ */
 function generateDefaultSpots() {
-  const cols = 5;
-  const rows = 3;
+  const { SPOTS_PER_ROW, ROWS_PER_FLOOR } = FLOOR_CONFIG;
+  const cols = SPOTS_PER_ROW;
+  const rows = ROWS_PER_FLOOR;
   const arr = [];
+
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const index = r * cols + c;
       const id = `${props.floor}-${index + 1}`;
       const x = (c + 0.5) * (100 / cols);
       const y = (r + 0.5) * (100 / rows);
+
       let section = "C";
       if (Number(props.floor) === 1) {
-        section = index < 5 ? "A" : "B";
+        section = index < SPOTS_PER_ROW ? "A" : "B";
       }
+
       arr.push({
         id,
         section,
-        status: Math.random() > 0.5 ? "occupied" : "free",
+        status: Math.random() > 0.5 ? SPOT_STATUS.OCCUPIED : SPOT_STATUS.FREE,
         x,
         y,
-        size: { width: 130, height: 75 },
+        size: { width: SPOT_DEFAULT_WIDTH, height: SPOT_DEFAULT_HEIGHT },
       });
     }
   }
+
   return arr;
 }
 
+/**
+ * Emits floor-resize event with container dimensions.
+ * @returns {void}
+ */
 function updateContainerSize() {
   nextTick(() => {
     const el = container.value;

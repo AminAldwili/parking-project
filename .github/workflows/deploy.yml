@@ -34,6 +34,10 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          VUE_APP_FIREBASE_API_KEY: ${{ secrets.VUE_APP_FIREBASE_API_KEY }}
+          VUE_APP_FIREBASE_DATABASE_URL: ${{ secrets.VUE_APP_FIREBASE_DATABASE_URL }}
+          VUE_APP_FIREBASE_PROJECT_ID: ${{ secrets.VUE_APP_FIREBASE_PROJECT_ID }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
