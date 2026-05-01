@@ -1,278 +1,319 @@
-# ToDO LIst
+# Smart Parking - Project Documentation
 
-```src/
-├── components/
-│ ├── 1-ParkingSpot.vue ← الأولى (الأساسي)
-│ ├── 2-Floor.vue ← الثانية (الأب)
-│ ├── 3-PathDrawer.vue ← الثالثة (المسار)
-│ └── 4-ParkingFloors.vue ← الرابعة (الجمع)
+## Overview
 
-```
+Smart Parking is a Vue 3 + Vuex + Firebase real-time parking management system with Arabic RTL support. It displays a two-floor parking layout with interactive spot navigation paths.
 
-## ✅ **TODO List (الترتيب الإجباري)**
+---
 
-### **1️⃣ ParkingSpot.vue** - **أولاً**
+## Project Structure
 
 ```
-✅ Props: spotId, status, position, size
-✅ Hover tooltip "مشغولة/فاضية"
-✅ Click emit مع position
-✅ ألوان: أخضر/أحمر
-✅ Responsive 120x80px
-
-```
-
-### **2️⃣ Floor.vue** - **ثانياً**
-
-```
-
-✅ v-for 15 spot من array
-✅ activePath state management
-✅ @spot-click ➜ draw path
-✅ Tailwind container 100vh
-
-```
-
-### **3️⃣ PathDrawer.vue** - **ثالثاً**
-
-```
-
-✅ SVG overlay absolute
-✅ path أصفر من ممر لـ spot
-✅ stroke-width 4px منقّط
-✅ auto-clear 5 ثواني
-
-```
-
-### **4️⃣ ParkingFloors.vue** - **رابعاً**
-
-```
-
-✅ يجمع Floor دور 1 + دور 2
-✅ ممر مستمر بين الدورين
-✅ قاطع A/B (دور1) + C (دور2)
-✅ responsive stacking
-
+parking-project/
+├── src/
+│   ├── App.vue                      # Main shell + theme provider
+│   ├── main.js                      # App entry point
+│   ├── components/
+│   │   ├── ParkingSpot.vue          # Individual parking spot (543 lines)
+│   │   ├── ParkingFloor.vue         # Single floor container (306 lines)
+│   │   ├── ParkingFloors.vue       # Main layout with 2 floors (929 lines)
+│   │   ├── PathDrawer.vue         # SVG navigation path (255 lines)
+│   │   └── ThemeToggle.vue        # Dark/light theme switch
+│   ├── store/
+│   │   └── index.js               # Vuex + Firebase store (123 lines)
+│   ├── firebase/
+│   │   └── config.js            # Firebase configuration
+│   └── router/                    # Vue Router configuration
 ```
 
 ---
 
-## 🔧 **التفاصيل التنفيذية**
+## Components
 
-### **1️⃣ ParkingSpot.vue**
+### 1. ParkingSpot.vue
 
+The smallest unit - a single parking spot.
+
+**Props:**
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `spotId` | String/Number | required | Unique identifier (e.g., "A1") |
+| `status` | Number | 0 | 0=free, 1=occupied, 2=reserved, 3=maintenance |
+| `position` | Object | `{x:0, y:0}` | Percentage position {x, y} |
+| `size` | Object | `{width:130, height:75}` | Dimensions in pixels |
+| `isActive` | Boolean | false | Whether this spot is currently highlighted |
+
+**Status Mapping:**
+```javascript
+0: { class: "is-free", label: "متاحة" }        // Green
+1: { class: "is-occupied", label: "مشغولة" }    // Red
+2: { class: "is-reserved", label: "محجوز" }    // Orange
+3: { class: "is-maintenance", label: "صيانة" }    // Gray
 ```
 
-📍 الموقع: src/components/1-ParkingSpot.vue
-🎯 المهام:
-├─ div relative position container
-├─ div spot box :class="statusClass"
-├─ v-if tooltip عند hover
-├─ @mouseenter/@mouseleave/@click
-├─ emit('spot-click', {spotId, position})
-└─ Tailwind: w-30 h-20 rounded-lg
+**Events:**
+- `spot-click` - Emits `{spotId, position}` on click
 
-🎨 المميزات:
-├─ أخضر #4ade80 (فاضي)
-├─ أحمر #ef4444 (مشغول)
-├─ tooltip أسود شفاف z-50
-└─ hover:scale-105 transition
+**Features:**
+- Hover tooltip with status label (teleported to body)
+- Touch support for mobile
+- Keyboard accessibility (Enter/Space)
+- Glow effects and animations
+- Dark/light theme variants
 
+---
+
+### 2. ParkingFloor.vue
+
+A single floor level containing multiple parking spots.
+
+**Props:**
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `floor` | String/Number | 1 | Floor identifier (1 or 2) |
+| `spotsProp` | Array | null | Array of spot objects |
+| `aisleXPercent` | Number | 50 | Center aisle position (%) |
+| `activeSpotId` | String | null | Currently active spot |
+
+**Events:**
+- `request-path` - Emits when a spot is clicked
+- `floor-resize` - Emits when floor dimensions change
+
+**Layout:**
+- Central aisle (50% from left)
+- Section labels (A, B for Floor 1; C for Floor 2)
+- Spot groups positioned by percentage
+
+---
+
+### 3. ParkingFloors.vue
+
+Main container combining both floors with ramp connector.
+
+**Structure:**
+```
+Floors Container:
+├── PathDrawer (SVG overlay)
+├── Section Header
+├── Floor 2 (Section C - Top)
+├── Ramp Connector (Floor 1 ↔ Floor 2)
+└── Floor 1 (Sections A & B - Bottom)
 ```
 
-### **2️⃣ Floor.vue**
+**Key Features:**
+- Real-time spot data from Vuex store
+- Responsive spot sizing based on floor width
+- Route origin indicator at bottom center
+- Ramp animations when navigating to Floor 2
 
-```
+**Path Drawing:**
+- Start point: Bottom center (aisleXPercent, bottom)
+- End point: Clicked spot position
+- L-shaped path: Vertical then horizontal
+- Auto-clear after 5 seconds
+- Ramp path for Floor 2 destinations
 
-📍 الموقع: src/components/2-Floor.vue
-🎯 المهام:
-├─ const activePath = ref(null)
-├─ const spots = ref([...15 spots])
-├─ <ParkingSpot v-for="spot in spots"
-│ :key="spot.id"
-│ @spot-click="drawPath"
-├─ <PathDrawer :active-path="activePath" />
-└─ div h-screen w-full relative
+---
 
-🎨 المميزات:
-├─ position نسبي 0-100%
-├─ ممر start ثابت x=50 y=0
-├─ reactive path updates
-└─ clearPath() بعد 5s
+### 4. PathDrawer.vue
 
-```
+SVG-based navigation path overlay.
 
-### **3️⃣ PathDrawer.vue**
+**Visual Style:**
+- Stroke: Linear gradient (#f59e0b → #fbbf24)
+- Stroke width: 4-6px (responsive)
+- Line cap: Round
+- Glow filter effect
+- Animated node endpoints
 
-```
-
-📍 الموقع: src/components/3-PathDrawer.vue
-🎯 المهام:
-├─ svg absolute top-0 left-0 w-full h-full
-├─ path v-if="activePath"
-│ :d="`M${startX},${startY} L${endX},${endY}`"
-├─ stroke="#eab308" stroke-width="4"
-├─ stroke-dasharray="10 5" opacity-80
-└─ animate entrance 300ms
-
-🎨 المميزات:
-├─ خط منقّط أصفر ذهبي
-├─ stroke-linecap round
-├─ pointer-events-none
-└─ smooth disappear
-
-```
-
-### **4️⃣ ParkingFloors.vue**
-
-```
-
-📍 الموقع: src/components/4-ParkingFloors.vue
-🎯 المهام:
-├─ <Floor floor="1" :spots="floor1Spots" />
-├─ <Floor floor="2" :spots="floor2Spots" />
-├─ ممر مستمر بين الدورين
-├─ flex flex-col md:flex-row gap-4
-└─ App.vue ➜ <ParkingFloors />
-
-🎨 المميزات:
-├─ دور1: A(5)+B(5) spots
-├─ دور2: C(5) spots فقط
-├─ ممر متّصل بصرياً
-└─ mobile stack / desktop side-by-side
-
+**Path Calculation:**
+```javascript
+// L-shaped path
+pathD = `M ${start.x} ${start.y} L ${start.x} ${end.y} L ${end.x} ${end.y}`
 ```
 
 ---
 
-## 🚀 **ترتيب التنفيذ الإجباري**
+## State Management (Vuex)
 
+### Store Structure
+
+```javascript
+state: {
+  spots: {
+    floor1: { A1: 0, A2: 0, ..., B1: 0, ... },  // Sections A & B
+    floor2: { C1: 0, C2: 0, ... }                  // Section C
+  },
+  theme: "dark" | "light",
+  firebaseInitialized: false
+}
 ```
 
-1. اعمل 1-ParkingSpot.vue ➜ test hover+click
-2. اعمل 2-Floor.vue ➜ test مع 3 spots
-3. اعمل 3-PathDrawer.vue ➜ test المسار
-4. اعمل 4-ParkingFloors.vue ➜ النسخة الكاملة
+### Getters
+- `getSpots` - All spots object
+- `getFloor1Spots` - Floor 1 spots only
+- `getFloor2Spots` - Floor 2 spots only
+- `getSpotStatus(floor, spot)` - Single spot status
+- `currentTheme` - Current theme value
+- `isFirebaseInitialized` - Firebase sync status
+
+### Mutations
+- `SET_SPOTS` - Update spots from Firebase
+- `SET_THEME` - Change theme
+- `SET_FIREBASE_INITIALIZED` - Set Firebase ready flag
+
+### Actions
+- `initSpots` - Subscribe to Firebase `Garage` ref
+- `toggleTheme` - Switch dark/light
+- `initTheme` - Set initial theme from system preference
+
+---
+
+## Firebase Schema
 
 ```
-
-**كل ملف لوحده يشتغل + يختبر قبل اللي بعده.**
-
+Garage/
+├── Floor1/
+│   ├── A1: { status: 0 }
+│   ├── A2: { status: 1 }
+│   ├── ...
+│   └── A5: { status: 3 }
+├── Floor2/
+│   ├── B1: { status: 0 }
+│   └── ...
+└── Floor3/
+    ├── C1: { status: 0 }
+    └── ...
 ```
 
-```
+**Status Values:**
+- `0` = Available (Free)
+- `1` = Occupied
+- `2` = Reserved
+- `3` = Maintenance
+
+---
+
+## Theme System
+
+### CSS Custom Properties (`:root`)
+
+**Colors - Dark:**
+- `--asphalt-dark`: #0f1419 (background)
+- `--asphalt-base`: #1a1f26
+- `--spot-free`: #10b981 (green)
+- `--spot-occupied`: #ef4444 (red)
+- `--accent-primary`: #0ea5e9 (blue)
+- `--accent-gold`: #f59e0b (path/navigation)
+
+**Colors - Light:**
+- `--asphalt-dark`: #f1f5f9
+- `--asphalt-base`: #ffffff
+- `--spot-free`: #059669
+- `--spot-occupied`: #dc2626
+- `--accent-primary`: #0284c7
+
+**Design Tokens:**
+- Spacing: `--space-xs` through `--space-2xl` (fluid with clamp)
+- Typography: `--text-xs` through `--text-2xl`
+- Radius: `--radius-sm` through `--radius-xl`
+- Transitions: `--duration-fast`, `--duration-normal`, `--duration-slow`
+
+---
+
+## How It Works
+
+### 1. App Startup
 
 ```
-
+main.js → App.vue (mount)
+       → store.dispatch('initTheme')
+       → store.dispatch('initSpots') → Firebase listener
 ```
 
-```
+### 2. Spot Click Flow
 
 ```
-# 🎯 **برومت كامل لـ VS Code AI - مسار 90° + تصميم طبقات**
-
-## 📝 **انسخ هذا في Continue.dev / Copilot Chat / Cursor:**
-
-```
-🚨 **مشروع Parking Map - تعليمات إجبارية جديدة**
-
-## 🎨 **التصميم النهائي 100%**:
-```
-┌──────────────────────────────┐ ← **دور 1** (أعلى الشاشة)
-│  **قاطع A** ← 5 spots (A1-A5) │
-│                              │
-│ ──────────────────────────   │ ← ممر مركزي عمودي
-│                              │
-│  **قاطع B** ← 5 spots (B1-B5)│
-└──────────────────────────────┘
-
-┌──────────────────────────────┐ ← **دور 2** (أسفل الشاشة)
-│  **قاطع C** ← 5 spots (C1-C5)│
-│                              │
-│ ──────────────────────────   │ ← نفس الممر مستمر
-│                              │
-│              (فاضي يمين)     │
-└──────────────────────────────┘
+User clicks ParkingSpot
+    ↓
+ParkingSpot emits 'spot-click' {spotId, position}
+    ↓
+ParkingFloor handles → emits 'request-path'
+    ↓
+ParkingFloors calculates path coordinates
+    ↓
+PathDrawer renders SVG with animation
+    ↓
+Auto-clear after 5000ms
 ```
 
-## 🔄 **المسار الجديد - منعطفات 90° حادة**:
-```
-1. من بداية الممر (x=50%, y=0%)
-2. خط عمودي لمستوى الـ spot (y=spot.y)
-3. منعطف **90° حاد** ➜ أفقي لـ spot.x
-   ├─ Spot في A (يسار) ➜ ينعطف **يمين**
-   └─ Spot في B/C (يمين) ➜ ينعطف **يسار**
-```
-
-**SVG Path مثال**:
-```
-d="M250,0 V175 H125"  // عمودي ثم أفقي 90°
-```
-
-## 📂 **هيكل المشروع**:
-```
-src/components/
-├── 1-ParkingSpot.vue     (15 spot مستقلة)
-├── 2-Floor.vue          (10 spots دور1)
-├── 3-SecondFloor.vue    (5 spots دور2) 
-├── 4-PathDrawer.vue     (SVG مسار 90°)
-└── 5-ParkingLayout.vue  (أعلى:دور1 | أسفل:دور2)
-```
-
-## 🎯 **التفاعلات المطلوبة**:
-```
-Hover Spot ➜ tooltip "مشغولة"/"فاضية"
-Click Spot ➜ مسار 90° أصفر منقط من الممر
-Auto-clear: 5 ثواني أو click جديد
-```
-
-## ⚙️ **المواصفات التقنية**:
+### 3. Firebase Sync
 
 ```
-إحداثيات:
-├── ممر start: { x: 50, y: 0 } ثابت
-├── A spots: x=15-35%, y=20-80%
-├── B spots: x=65-85%, y=20-80%
-├── C spots: x=15-35%, y=20-80% (دور2)
-
-مسار SVG:
-├── stroke="#eab308" stroke-width="4"
-├── stroke-dasharray="10 5"
-├── stroke-linecap="round" opacity="0.8"
-
-Layout:
-├── flex flex-col gap-8
-├── دور1: mt-0 (أعلى)
-└── دور2: mb-0 (أسفل)
+Firebase onValue listener triggered
+    ↓
+parseFirebaseData() processes snapshot
+    ↓
+commit('SET_SPOTS', {bottomFloor, topFloor})
+    ↓
+Getters update → Components reactively update
 ```
 
-## 🛠️ **أوامر التحكم الجاهزة**:
+---
 
+## Responsive Behavior
+
+**Breakpoints:**
+- Mobile: < 480px
+- Tablet: 480-768px
+- Desktop: > 768px
+
+**Fluid Sizing:**
+All dimensions use `clamp()` for smooth scaling across viewports.
+
+---
+
+## Accessibility
+
+- ARIA labels on interactive elements
+- Keyboard navigation (Tab, Enter, Space)
+- Focus visible rings
+- Reduced motion support (`prefers-reduced-motion`)
+- Screen reader friendly tooltips
+
+---
+
+## Dependencies
+
+```json
+{
+  "vue": "^3.x",
+  "vuex": "^4.x",
+  "vue-router": "^4.x",
+  "firebase": "^10.x"
+}
 ```
-🚀 "اكتب 1-ParkingSpot.vue كامل 15 spot مع:
-   props spotId='A1', status, position{x:25,y:35}
-   hover tooltip أسود، click emit position"
 
-🚀 "اعمل 2-Floor.vue دور1 مع 10 spots A1-A5 B1-B5
-   v-for + activePath ref + مسار 90° logic"
+---
 
-🚀 "اكتب 3-SecondFloor.vue دور2 C1-C5 spots فقط"
+## Development Commands
 
-🚀 "ارسم 4-PathDrawer.vue SVG مع:
-   path 90°: M50,0 V${spotY} H${spotX}
-   أصفر منقط stroke-width=4"
-
-🚀 "اجمع 5-ParkingLayout.vue:
-   <Floor1 class='mt-0'/> فوق
-   <Floor2 class='mb-0'/> تحت"
+```bash
+npm run dev      # Start dev server
+npm run build   # Production build
+npm run preview # Preview production build
 ```
 
-## ✅ **قواعد VS Code AI**:
-```
-1. TailwindCSS فقط - لا CSS عادي
-2. Vue 3 Composition API ref()
-3. Position نسبي 0-100% ➜ pixels via getBoundingClientRect()
-4. مسار 90° حاد - **لا منحنيات**
-5. Auto setTimeout(5000) clear
-6. Responsive mobile-first
-```
+---
+
+## File Statistics
+
+| File | Lines | Purpose |
+|------|-------|---------|
+| ParkingSpot.vue | 543 | Individual spot component |
+| ParkingFloor.vue | 306 | Floor container |
+| ParkingFloors.vue | 929 | Main layout |
+| PathDrawer.vue | 255 | SVG path rendering |
+| store/index.js | 123 | Vuex + Firebase |
+| App.vue | 551 | Shell + theme |
+| **Total** | **2707** | Core application |
