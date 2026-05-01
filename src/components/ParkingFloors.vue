@@ -393,18 +393,9 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
-function measureFloorWidths() {
-  const firstRect = firstFloorBox.value?.getBoundingClientRect();
-  const secondRect = secondFloorBox.value?.getBoundingClientRect();
-  if (firstRect?.width) floorWidths[1] = firstRect.width;
-  if (secondRect?.width) floorWidths[2] = secondRect.width;
-}
-
-function getFluidSpotSize(floorWidth) {
-  const baseWidth =
-    Number.isFinite(floorWidth) && floorWidth > 0
-      ? floorWidth
-      : window.innerWidth;
+function getFluidSpotSize() {
+  const containerEl = container.value;
+  const baseWidth = containerEl?.offsetWidth || window.innerWidth;
   const spotWidth = clamp(Math.round(baseWidth * 0.28), SPOT_MIN_WIDTH, SPOT_MAX_WIDTH);
   const spotHeight = clamp(Math.round(spotWidth * 0.58), SPOT_MIN_HEIGHT, SPOT_MAX_HEIGHT);
   return { width: spotWidth, height: spotHeight };
@@ -425,9 +416,6 @@ function updateContainerSize() {
  * @returns {void}
  */
 function updateSpotSizes() {
-  if (!floorWidths[1] || !floorWidths[2]) {
-    measureFloorWidths();
-  }
   applySpotSizes();
 }
 
@@ -436,26 +424,21 @@ function updateSpotSizes() {
  * @returns {void}
  */
 function applySpotSizes() {
-  const floor1Size = getFluidSpotSize(floorWidths[1]);
-  const floor2Size = getFluidSpotSize(floorWidths[2]);
+  const size = getFluidSpotSize();
   floor1Spots.forEach((spot) => {
-    spot.size = { ...floor1Size };
+    spot.size = { ...size };
   });
   floor2Spots.forEach((spot) => {
-    spot.size = { ...floor2Size };
+    spot.size = { ...size };
   });
 }
 
 /**
  * Handler for floor-resize event from ParkingFloor.
- * Updates floor width tracking only - spot sizes are calculated
- * by ResizeObserver and window resize handlers to avoid circular loops.
- * @param {Object} payload - Event payload
  * @returns {void}
  */
-function handleFloorResize(payload) {
-  if (!payload?.floor || !payload?.rect?.width) return;
-  floorWidths[Number(payload.floor)] = payload.rect.width;
+function handleFloorResize() {
+  // Floor width tracking removed - spot sizing now uses container width directly
 }
 
 /**
@@ -466,7 +449,6 @@ function handleFloorResize(payload) {
 function handleWindowResize() {
   updateContainerSize();
   updateRampRect();
-  measureFloorWidths();
   updateSpotSizes();
 }
 
@@ -544,14 +526,19 @@ onMounted(() => {
     if (el && window.ResizeObserver) {
       resizeObserver.value = new ResizeObserver(() => {
         updateContainerSize();
-        measureFloorWidths();
-        updateSpotSizes();
+        // Only update floor width tracking, not spot sizes
+        // to avoid circular resize loops
+        if (firstFloorBox.value) {
+          floorWidths[1] = firstFloorBox.value.getBoundingClientRect().width;
+        }
+        if (secondFloorBox.value) {
+          floorWidths[2] = secondFloorBox.value.getBoundingClientRect().width;
+        }
       });
       resizeObserver.value.observe(el);
     }
     updateContainerSize();
     updateRampRect();
-    measureFloorWidths();
     updateSpotSizes();
   });
 
