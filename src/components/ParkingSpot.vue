@@ -14,7 +14,7 @@
       :aria-pressed="status === 'occupied'"
       :aria-label="`موقف ${spotId} - ${statusLabel}`"
       @click="onClick"
-      @touchstart.passive="isTapped = true"
+      @touchstart.passive="onTouchStart"
       @touchend="isTapped = false"
       @touchcancel="isTapped = false"
       @keydown.enter="onClick"
@@ -28,19 +28,6 @@
         <div class="indicator-glow"></div>
       </div>
     </div>
-
-    <Teleport to="body">
-      <Transition name="tooltip-fade">
-        <div
-          v-if="isHover || isTapped"
-          class="spot-tooltip"
-          :style="tooltipStyle"
-          aria-hidden="true"
-        >
-          {{ statusLabel }}
-        </div>
-      </Transition>
-    </Teleport>
   </div>
 </template>
 
@@ -51,15 +38,8 @@ import {
   SPOT_LABELS,
   SPOT_CLASSES
 } from "@/constants";
+import { useTooltip } from "@/composables/useTooltip";
 
-/**
- * Individual parking spot component.
- * Displays a single parking spot with status, hover tooltip, and click interaction.
- *
- * @component
- * @example
- * <ParkingSpot spot-id="A1" :status="0" :position="{x: 25, y: 50}" />
- */
 const props = defineProps({
   /**
    * Unique identifier for the parking spot
@@ -116,18 +96,8 @@ const isHover = ref(false);
  * @type {import('vue').Ref<boolean>}
  */
 const isTapped = ref(false);
-
-/**
- * Reference to the spot DOM element
- * @type {import('vue').Ref<HTMLElement|null>}
- */
 const spotRef = ref(null);
-
-/**
- * Position for the floating tooltip
- * @type {import('vue').Ref<{x: number, y: number}>}
- */
-const tooltipPosition = ref({ x: 0, y: 0 });
+const { showTooltip, clearTooltip } = useTooltip();
 
 /**
  * Computed CSS class based on spot status
@@ -145,50 +115,22 @@ const statusLabel = computed(() => {
   return SPOT_LABELS[props.status] || SPOT_LABELS[SPOT_STATUS.FREE];
 });
 
-/**
- * Position styles for the tooltip (teleported to body)
- * @type {import('vue').ComputedRef<{position: string, left: string, top: string, transform: string}>}
- */
-const tooltipStyle = computed(() => {
-  const offset = 12;
-  return {
-    position: "fixed",
-    left: `${tooltipPosition.value.x}px`,
-    top: `${tooltipPosition.value.y + offset}px`,
-    transform: "translateX(-50%)",
-  };
-});
-
-/**
- * Updates tooltip position based on spot element's position in viewport.
- * Called on mouseenter and window resize.
- * @returns {void}
- */
-function updateTooltipPosition() {
+function handleMouseEnter() {
+  isHover.value = true;
   const el = spotRef.value;
   if (!el) return;
   const rect = el.getBoundingClientRect();
-  tooltipPosition.value = {
-    x: rect.left + rect.width / 2,
-    y: rect.top + rect.height,
-  };
+  showTooltip(
+    props.spotId,
+    rect.left + rect.width / 2,
+    rect.bottom,
+    statusLabel.value
+  );
 }
 
-/**
- * Mouse enter handler - shows tooltip
- * @returns {void}
- */
-function handleMouseEnter() {
-  isHover.value = true;
-  updateTooltipPosition();
-}
-
-/**
- * Mouse leave handler - hides tooltip
- * @returns {void}
- */
 function handleMouseLeave() {
   isHover.value = false;
+  clearTooltip();
 }
 
 /**
@@ -202,13 +144,21 @@ function onClick() {
   });
 }
 
-// Cleanup listeners on component unmount
+function onTouchStart() {
+  isTapped.value = true;
+  const el = spotRef.value;
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  showTooltip(props.spotId, rect.left + rect.width / 2, rect.bottom, statusLabel.value);
+}
+
 onMounted(() => {
-  window.addEventListener("resize", updateTooltipPosition);
+  window.addEventListener("scroll", clearTooltip, true);
 });
 
 onUnmounted(() => {
-  window.removeEventListener("resize", updateTooltipPosition);
+  window.removeEventListener("scroll", clearTooltip, true);
+  clearTooltip();
 });
 </script>
 
@@ -476,30 +426,6 @@ onUnmounted(() => {
 .is-maintenance:hover .indicator-glow,
 .is-maintenance:focus-visible .indicator-glow {
   animation: indicator-blink 1s ease-in-out infinite;
-}
-
-.spot-tooltip {
-  padding: 6px 12px;
-  border-radius: 6px;
-  background: var(--asphalt-dark);
-  color: var(--road-white);
-  font-size: 12px;
-  font-weight: 600;
-  white-space: nowrap;
-  z-index: 9999;
-  pointer-events: none;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-}
-
-.tooltip-fade-enter-active,
-.tooltip-fade-leave-active {
-  transition: opacity 200ms ease, transform 200ms ease;
-}
-
-.tooltip-fade-enter-from,
-.tooltip-fade-leave-to {
-  opacity: 0;
-  transform: translateX(-50%) translateY(8px);
 }
 
 @media (max-width: 768px) {

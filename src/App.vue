@@ -2,6 +2,7 @@
 import { onMounted, watch } from "vue";
 import { useStore } from "vuex";
 import ThemeToggle from "./components/ThemeToggle.vue";
+import GlobalTooltip from "./components/GlobalTooltip.vue";
 
 const store = useStore();
 
@@ -78,6 +79,7 @@ watch(
     <main class="page-content">
       <router-view />
     </main>
+    <GlobalTooltip />
   </div>
 </template>
 
