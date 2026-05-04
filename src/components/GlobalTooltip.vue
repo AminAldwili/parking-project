@@ -18,9 +18,18 @@
 </template>
 
 <script setup>
+import { onMounted, onUnmounted } from "vue";
 import { useTooltip } from "@/composables/useTooltip";
 
-const { activeTooltip } = useTooltip();
+const { activeTooltip, clearTooltip } = useTooltip();
+
+onMounted(() => {
+  window.addEventListener("scroll", clearTooltip, true);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", clearTooltip, true);
+});
 </script>
 
 <style>
@@ -36,6 +45,7 @@ const { activeTooltip } = useTooltip();
   z-index: 9999;
   pointer-events: none;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  will-change: transform;
 }
 
 .tooltip-fade-enter-active,

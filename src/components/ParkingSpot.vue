@@ -32,7 +32,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, computed, onUnmounted } from "vue";
 import {
   SPOT_STATUS,
   SPOT_LABELS,
@@ -151,12 +151,7 @@ function onTouchStart() {
   showTooltip(props.spotId, rect.left + rect.width / 2, rect.bottom, statusLabel.value);
 }
 
-onMounted(() => {
-  window.addEventListener("scroll", clearTooltip, true);
-});
-
 onUnmounted(() => {
-  window.removeEventListener("scroll", clearTooltip, true);
   if (activeTooltip.value?.spotId === props.spotId) {
     clearTooltip();
   }
