@@ -32,7 +32,6 @@
           :status="spot.status"
           :is-active="activeSpotId === spot.id"
           :position="{ x: spot.x, y: spot.y }"
-          :size="spot.size"
           @spot-click="onSpotClick"
         />
       </div>
@@ -45,8 +44,6 @@ import { ref, computed, onMounted, onUnmounted, nextTick } from "vue";
 import ParkingSpot from "@/components/ParkingSpot.vue";
 import {
   AISLE_X_PERCENT,
-  SPOT_DEFAULT_WIDTH,
-  SPOT_DEFAULT_HEIGHT,
   FLOOR_CONFIG,
   SPOT_STATUS
 } from "@/constants";
@@ -177,7 +174,6 @@ function generateDefaultSpots() {
         status: Math.random() > 0.5 ? SPOT_STATUS.OCCUPIED : SPOT_STATUS.FREE,
         x,
         y,
-        size: { width: SPOT_DEFAULT_WIDTH, height: SPOT_DEFAULT_HEIGHT },
       });
     }
   }

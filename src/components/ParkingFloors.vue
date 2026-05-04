@@ -149,13 +149,7 @@ import PathDrawer from "@/components/PathDrawer.vue";
 import {
   AISLE_X_PERCENT,
   PATH_TIMEOUT_MS,
-  SPOT_MIN_WIDTH,
-  SPOT_MIN_HEIGHT,
-  SPOT_MAX_WIDTH,
-  SPOT_MAX_HEIGHT,
-  SPOT_STATUS,
-  SPOT_DEFAULT_WIDTH,
-  SPOT_DEFAULT_HEIGHT
+  SPOT_STATUS
 } from "@/constants";
 
 /**
@@ -231,7 +225,6 @@ function updateSpotsFromStore() {
       y: yPositions[idx],
       section,
       status: floor1[spotId] ?? SPOT_STATUS.FREE,
-      size: { width: SPOT_DEFAULT_WIDTH, height: SPOT_DEFAULT_HEIGHT },
     });
   });
 
@@ -243,7 +236,6 @@ function updateSpotsFromStore() {
       y: yPositions[idx],
       section: "C",
       status: floor2[spotId] ?? SPOT_STATUS.FREE,
-      size: { width: SPOT_DEFAULT_WIDTH, height: SPOT_DEFAULT_HEIGHT },
     });
   });
 }
@@ -312,12 +304,6 @@ const clearTimer = ref(null);
  * @type {import('vue').Ref<ResizeObserver|null>}
  */
 const resizeObserver = ref(null);
-
-/**
- * Floor width measurements for spot sizing
- * @type {import('vue').Reactive<{1: number, 2: number}>}
- */
-const floorWidths = reactive({ 1: 0, 2: 0 });
 
 /**
  * Currently active/selected spot ID
@@ -389,18 +375,6 @@ function scrollToSpot(spotId) {
 
 defineExpose({ scrollToSpot });
 
-function clamp(value, min, max) {
-  return Math.min(max, Math.max(min, value));
-}
-
-function getFluidSpotSize() {
-  const containerEl = container.value;
-  const baseWidth = containerEl?.offsetWidth || window.innerWidth;
-  const spotWidth = clamp(Math.round(baseWidth * 0.28), SPOT_MIN_WIDTH, SPOT_MAX_WIDTH);
-  const spotHeight = clamp(Math.round(spotWidth * 0.58), SPOT_MIN_HEIGHT, SPOT_MAX_HEIGHT);
-  return { width: spotWidth, height: spotHeight };
-}
-
 function updateContainerSize() {
   nextTick(() => {
     const el = container.value;
@@ -410,33 +384,6 @@ function updateContainerSize() {
   });
 }
 
-/**
- * Updates spot sizes based on floor width measurements.
- * Calls measureFloorWidths if not already measured.
- * @returns {void}
- */
-function updateSpotSizes() {
-  applySpotSizes();
-}
-
-/**
- * Applies calculated fluid sizes to all spots.
- * @returns {void}
- */
-function applySpotSizes() {
-  const size = getFluidSpotSize();
-  floor1Spots.forEach((spot) => {
-    spot.size = { ...size };
-  });
-  floor2Spots.forEach((spot) => {
-    spot.size = { ...size };
-  });
-}
-
-/**
- * Handler for floor-resize event from ParkingFloor.
- * @returns {void}
- */
 function handleFloorResize() {
   // Floor width tracking removed - spot sizing now uses container width directly
 }
@@ -449,7 +396,6 @@ function handleFloorResize() {
 function handleWindowResize() {
   updateContainerSize();
   updateRampRect();
-  updateSpotSizes();
 }
 
 /**
@@ -526,20 +472,12 @@ onMounted(() => {
     if (el && window.ResizeObserver) {
       resizeObserver.value = new ResizeObserver(() => {
         updateContainerSize();
-        // Only update floor width tracking, not spot sizes
-        // to avoid circular resize loops
-        if (firstFloorBox.value) {
-          floorWidths[1] = firstFloorBox.value.getBoundingClientRect().width;
-        }
-        if (secondFloorBox.value) {
-          floorWidths[2] = secondFloorBox.value.getBoundingClientRect().width;
-        }
+        updateRampRect();
       });
       resizeObserver.value.observe(el);
     }
     updateContainerSize();
     updateRampRect();
-    updateSpotSizes();
   });
 
   window.addEventListener("resize", handleWindowResize);

@@ -9,7 +9,6 @@
     <div
       class="spot-card"
       :class="[statusClass, { 'is-hovered': isHover || isTapped, 'is-active': isActive }]"
-      :style="spotStyle"
       role="button"
       tabindex="0"
       :aria-pressed="status === 'occupied'"
@@ -50,9 +49,7 @@ import { ref, computed, onMounted, onUnmounted } from "vue";
 import {
   SPOT_STATUS,
   SPOT_LABELS,
-  SPOT_CLASSES,
-  SPOT_DEFAULT_WIDTH,
-  SPOT_DEFAULT_HEIGHT
+  SPOT_CLASSES
 } from "@/constants";
 
 /**
@@ -98,15 +95,6 @@ const props = defineProps({
    * @default {x: 0, y: 0}
    */
   position: { type: Object, default: () => ({ x: 0, y: 0 }) },
-
-  /**
-   * Size of the spot in pixels
-   * @type {{width: number, height: number}}
-   */
-  size: {
-    type: Object,
-    default: () => ({ width: SPOT_DEFAULT_WIDTH, height: SPOT_DEFAULT_HEIGHT })
-  },
 });
 
 /**
@@ -155,19 +143,6 @@ const statusClass = computed(() => {
  */
 const statusLabel = computed(() => {
   return SPOT_LABELS[props.status] || SPOT_LABELS[SPOT_STATUS.FREE];
-});
-
-/**
- * Inline styles for the spot element
- * @type {import('vue').ComputedRef<{width: string, height: string}>}
- */
-const spotStyle = computed(() => {
-  const w = props.size.width;
-  const h = props.size.height;
-  return {
-    width: typeof w === "string" ? w : `${w}px`,
-    height: typeof h === "string" ? h : `${h}px`,
-  };
 });
 
 /**
@@ -255,6 +230,11 @@ onUnmounted(() => {
   border-radius: var(--radius-md);
   cursor: pointer;
   user-select: none;
+
+  /* CSS-only responsive sizing */
+  width: clamp(64px, 28vw, 130px);
+  height: clamp(42px, 16.24vw, 75px);
+
   transition:
     transform var(--duration-normal) var(--ease-out),
     box-shadow var(--duration-normal) var(--ease-out);
