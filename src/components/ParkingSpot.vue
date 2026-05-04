@@ -97,7 +97,7 @@ const isHover = ref(false);
  */
 const isTapped = ref(false);
 const spotRef = ref(null);
-const { showTooltip, clearTooltip } = useTooltip();
+const { showTooltip, clearTooltip, activeTooltip } = useTooltip();
 
 /**
  * Computed CSS class based on spot status
@@ -130,7 +130,6 @@ function handleMouseEnter() {
 
 function handleMouseLeave() {
   isHover.value = false;
-  clearTooltip();
 }
 
 /**
@@ -158,7 +157,9 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener("scroll", clearTooltip, true);
-  clearTooltip();
+  if (activeTooltip.value?.spotId === props.spotId) {
+    clearTooltip();
+  }
 });
 </script>
 
