@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick } from "vue";
+import { ref, computed, onMounted } from "vue";
 import ParkingSpot from "@/components/ParkingSpot.vue";
 import {
   AISLE_X_PERCENT,
@@ -88,9 +88,8 @@ const props = defineProps({
 /**
  * Events emitted by this component
  * @event request-path - Called when a spot is clicked, emits path data
- * @event floor-resize - Called when floor dimensions change
  */
-const emit = defineEmits(["request-path", "floor-resize"]);
+const emit = defineEmits(["request-path"]);
 
 /**
  * Reference to floor container element
@@ -103,12 +102,6 @@ const container = ref(null);
  * @type {import('vue').Ref<Array>}
  */
 const spots = ref([]);
-
-/**
- * ResizeObserver for responsive updates
- * @type {import('vue').Ref<ResizeObserver|null>}
- */
-const resizeObserver = ref(null);
 
 /**
  * Map of spot element references by ID
@@ -182,23 +175,10 @@ function generateDefaultSpots() {
 }
 
 /**
- * Emits floor-resize event with container dimensions.
+ * Calculates center position of clicked spot and emits path request.
+ * @param {Object} payload - {spotId, position}
  * @returns {void}
  */
-function updateContainerSize() {
-  nextTick(() => {
-    const el = container.value;
-    if (el) {
-      const rect = el.getBoundingClientRect();
-      emit("floor-resize", { floor: props.floor, rect });
-    }
-  });
-}
-
-function handleResize() {
-  updateContainerSize();
-}
-
 function onSpotClick(payload) {
   const floorRect = container.value?.getBoundingClientRect();
   let spotCenter = null;
@@ -230,27 +210,6 @@ onMounted(() => {
     spots.value = props.spotsProp;
   } else {
     spots.value = generateDefaultSpots();
-  }
-
-  updateContainerSize();
-  window.addEventListener("resize", handleResize);
-
-  nextTick(() => {
-    const el = container.value;
-    if (el && window.ResizeObserver) {
-      resizeObserver.value = new ResizeObserver(() => {
-        handleResize();
-      });
-      resizeObserver.value.observe(el);
-    }
-  });
-});
-
-onUnmounted(() => {
-  window.removeEventListener("resize", handleResize);
-  if (resizeObserver.value) {
-    resizeObserver.value.disconnect();
-    resizeObserver.value = null;
   }
 });
 </script>

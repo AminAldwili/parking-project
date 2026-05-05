@@ -1,4 +1,5 @@
 import { ref } from "vue";
+import { TOOLTIP_AUTO_DISMISS_MS } from "@/constants";
 
 /**
  * Global tooltip state - shared singleton across all spot instances.
@@ -33,7 +34,7 @@ export function useTooltip() {
     tooltipTimer = setTimeout(() => {
       activeTooltip.value = null;
       tooltipTimer = null;
-    }, 5000);
+    }, TOOLTIP_AUTO_DISMISS_MS);
   }
 
   /**

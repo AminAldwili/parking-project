@@ -4,6 +4,15 @@
     role="img"
     :aria-label="activePath ? 'Navigation path to parking spot' : ''"
     aria-live="polite"
+    :style="{
+      '--path-color-start': pathGradStart,
+      '--path-color-end': pathGradEnd,
+      '--node-start': nodeStart,
+      '--node-end': nodeEnd,
+      '--node-stroke': nodeStroke,
+      '--path-glow': pathGlow,
+      '--path-end-glow': pathEndGlow,
+    }"
   >
     <svg
       v-if="activePath && containerSize.width && containerSize.height"
@@ -16,12 +25,12 @@
     >
       <defs>
         <linearGradient id="routeGradient" x1="0%" x2="100%" y1="0%" y2="0%">
-          <stop offset="0%" stop-color="#f59e0b" />
-          <stop offset="100%" stop-color="#fbbf24" />
+          <stop offset="0%" :stop-color="pathGradStart" />
+          <stop offset="100%" :stop-color="pathGradEnd" />
         </linearGradient>
         <linearGradient id="rampGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stop-color="#fbbf24" />
-          <stop offset="100%" stop-color="#f59e0b" />
+          <stop offset="0%" :stop-color="pathGradEnd" />
+          <stop offset="100%" :stop-color="pathGradStart" />
         </linearGradient>
         <filter id="pathGlow" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="6" result="coloredBlur" />
@@ -80,6 +89,7 @@
 
 <script setup>
 import { computed, ref, onMounted, onUnmounted } from "vue";
+import { BREAKPOINTS, COLORS } from "@/constants";
 
 const props = defineProps({
   activePath: { type: Object, default: null },
@@ -88,8 +98,16 @@ const props = defineProps({
 
 const windowWidth = ref(window.innerWidth);
 
-const isMobile = computed(() => windowWidth.value < 768);
-const isSmallMobile = computed(() => windowWidth.value < 480);
+const isMobile = computed(() => windowWidth.value < BREAKPOINTS.TABLET);
+const isSmallMobile = computed(() => windowWidth.value < BREAKPOINTS.MOBILE);
+
+const pathGradStart = COLORS.PATH_GRADIENT_START;
+const pathGradEnd = COLORS.PATH_GRADIENT_END;
+const nodeStart = COLORS.NODE_START;
+const nodeEnd = COLORS.NODE_END;
+const nodeStroke = COLORS.NODE_STROKE;
+const pathGlow = COLORS.PATH_GLOW_COLOR;
+const pathEndGlow = COLORS.PATH_END_GLOW;
 
 const strokeWidthMain = computed(() => {
   if (isSmallMobile.value) return 4;
@@ -211,18 +229,18 @@ onUnmounted(() => {
 }
 
 .start-node {
-  fill: #f59e0b;
-  stroke: rgba(255, 255, 255, 0.8);
+  fill: var(--path-color-start);
+  stroke: var(--node-stroke);
   stroke-width: 3;
-  filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.7));
+  filter: drop-shadow(0 0 12px var(--path-glow));
   animation-delay: 200ms;
 }
 
 .end-node {
-  fill: #fbbf24;
-  stroke: rgba(255, 255, 255, 0.8);
+  fill: var(--path-color-end);
+  stroke: var(--node-stroke);
   stroke-width: 3;
-  filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.7));
+  filter: drop-shadow(0 0 10px var(--path-end-glow));
   animation-delay: 350ms;
 }
 
@@ -245,11 +263,11 @@ onUnmounted(() => {
 
 :root.light .start-node {
   stroke: rgba(255, 255, 255, 0.9);
-  filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.6));
+  filter: drop-shadow(0 0 12px var(--path-glow));
 }
 
 :root.light .end-node {
   stroke: rgba(255, 255, 255, 0.9);
-  filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.6));
+  filter: drop-shadow(0 0 10px var(--path-end-glow));
 }
 </style>

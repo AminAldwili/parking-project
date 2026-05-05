@@ -1,5 +1,6 @@
 import { computed } from "vue";
 import { useRoute } from "vue-router";
+import { getFloorFromSpotId } from "@/constants";
 
 export function useSpotFromUrl() {
   const route = useRoute();
@@ -16,10 +17,7 @@ export function useSpotFromUrl() {
 
   const targetFloor = computed(() => {
     if (!cleanSpotId.value) return null;
-    const prefix = cleanSpotId.value.charAt(0).toUpperCase();
-    if (prefix === "A" || prefix === "B") return 1;
-    if (prefix === "C") return 2;
-    return null;
+    return getFloorFromSpotId(cleanSpotId.value);
   });
 
   const hasSlotParam = computed(() => !!slotParam.value);

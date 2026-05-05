@@ -14,6 +14,19 @@ export const PATH_TIMEOUT_MS = 5000
 /** Center aisle position as percentage (50 = middle) */
 export const AISLE_X_PERCENT = 50
 
+/** Delay in ms for spot scroll-into-view animation */
+export const SPOT_SCROLL_DELAY_MS = 1000
+
+/** Delay in ms for spot status check after activation */
+export const SPOT_STATUS_CHECK_DELAY_MS = 500
+
+// ============================================================================
+// Tooltip
+// ============================================================================
+
+/** Auto-dismiss timeout in ms for tooltip */
+export const TOOLTIP_AUTO_DISMISS_MS = 5000
+
 // ============================================================================
 // Spot Dimensions (pixels)
 // ============================================================================
@@ -120,4 +133,20 @@ export const FIREBASE_PATHS = {
   FLOOR_1: 'Floor1',
   FLOOR_2: 'Floor2',
   FLOOR_3: 'Floor3'
+}
+
+// ============================================================================
+// Spot Utilities
+// ============================================================================
+
+/**
+ * Determines which floor a spot belongs to based on its ID prefix.
+ * @param {string} spotId - Spot identifier (e.g. "A1", "B3", "C5")
+ * @returns {number|null} Floor number (1 or 2), or null if unrecognized
+ */
+export function getFloorFromSpotId(spotId) {
+  const prefix = spotId.charAt(0).toUpperCase();
+  if (prefix === "A" || prefix === "B") return 1;
+  if (prefix === "C") return 2;
+  return null;
 }

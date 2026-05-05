@@ -261,12 +261,151 @@ onUnmounted(() => {
 }
 
 .is-free {
-  background: linear-gradient(145deg, var(--spot-free), #059669);
+  --status-color: var(--spot-free);
+  --status-bg-dark: #059669;
+  --status-border: rgba(16, 185, 129, 0.3);
+  --status-indicator: rgba(16, 185, 129, 0.6);
+  --status-glow: rgba(16, 185, 129, 0.4);
+  --status-glow-strong: rgba(16, 185, 129, 0.8);
+  --status-light-shadow: 0 4px 16px rgba(5, 150, 105, 0.15), 0 2px 4px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  --status-light-hover-shadow: 0 12px 32px rgba(5, 150, 105, 0.2), 0 4px 8px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.is-occupied {
+  --status-color: var(--spot-occupied);
+  --status-bg-dark: #dc2626;
+  --status-border: rgba(239, 68, 68, 0.3);
+  --status-indicator: rgba(239, 68, 68, 0.6);
+  --status-glow: rgba(239, 68, 68, 0.4);
+  --status-glow-strong: rgba(239, 68, 68, 0.8);
+  --status-light-shadow: 0 4px 16px rgba(220, 38, 38, 0.12), 0 2px 4px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  --status-light-hover-shadow: 0 12px 32px rgba(220, 38, 38, 0.18), 0 4px 8px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.is-reserved {
+  --status-color: var(--spot-reserved);
+  --status-bg-dark: #f97316;
+  --status-border: rgba(249, 115, 22, 0.3);
+  --status-indicator: rgba(249, 115, 22, 0.6);
+  --status-glow: rgba(249, 115, 22, 0.4);
+  --status-glow-strong: rgba(249, 115, 22, 0.8);
+  --status-light-shadow: 0 4px 16px rgba(249, 115, 22, 0.15), 0 2px 4px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  --status-light-hover-shadow: 0 12px 32px rgba(249, 115, 22, 0.2), 0 4px 8px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.is-maintenance {
+  --status-color: var(--spot-maintenance);
+  --status-bg-dark: #6b7280;
+  --status-border: rgba(107, 114, 128, 0.3);
+  --status-indicator: rgba(107, 114, 128, 0.6);
+  --status-glow: rgba(107, 114, 128, 0.4);
+  --status-glow-strong: rgba(107, 114, 128, 0.8);
+  --status-light-shadow: 0 4px 16px rgba(107, 114, 128, 0.12), 0 2px 4px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  --status-light-hover-shadow: 0 12px 32px rgba(107, 114, 128, 0.18), 0 4px 8px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* Shared status styles — applies to all status classes */
+.is-free,
+.is-occupied,
+.is-reserved,
+.is-maintenance {
   color: #fff;
+  background: linear-gradient(145deg, var(--status-color), var(--status-bg-dark));
   box-shadow:
     var(--shadow-sm),
-    0 0 0 1px rgba(16, 185, 129, 0.3),
+    0 0 0 1px var(--status-border),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.is-free .spot-indicator,
+.is-occupied .spot-indicator,
+.is-reserved .spot-indicator,
+.is-maintenance .spot-indicator {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 8px var(--status-indicator);
+}
+
+.is-free .indicator-glow,
+.is-occupied .indicator-glow,
+.is-reserved .indicator-glow,
+.is-maintenance .indicator-glow {
+  background: var(--status-color);
+}
+
+.is-free:hover,
+.is-free:focus-visible,
+.is-free.is-hovered,
+.is-occupied:hover,
+.is-occupied:focus-visible,
+.is-occupied.is-hovered,
+.is-reserved:hover,
+.is-reserved:focus-visible,
+.is-reserved.is-hovered,
+.is-maintenance:hover,
+.is-maintenance:focus-visible,
+.is-maintenance.is-hovered {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow:
+    var(--shadow-lg),
+    0 0 20px var(--status-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.is-free:hover .spot-indicator,
+.is-free:focus-visible .spot-indicator,
+.is-occupied:hover .spot-indicator,
+.is-occupied:focus-visible .spot-indicator,
+.is-reserved:hover .spot-indicator,
+.is-reserved:focus-visible .spot-indicator,
+.is-maintenance:hover .spot-indicator,
+.is-maintenance:focus-visible .spot-indicator {
+  box-shadow: 0 0 16px var(--status-glow-strong);
+}
+
+.is-free:hover .indicator-glow,
+.is-free:focus-visible .indicator-glow,
+.is-occupied:hover .indicator-glow,
+.is-occupied:focus-visible .indicator-glow,
+.is-reserved:hover .indicator-glow,
+.is-reserved:focus-visible .indicator-glow,
+.is-maintenance:hover .indicator-glow,
+.is-maintenance:focus-visible .indicator-glow {
+  animation: indicator-blink 1s ease-in-out infinite;
+}
+
+@keyframes indicator-blink {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(2);
+  }
+}
+
+/* Light mode — shared rules */
+:root.light .is-free,
+:root.light .is-occupied,
+:root.light .is-reserved,
+:root.light .is-maintenance {
+  box-shadow: var(--status-light-shadow);
+}
+
+:root.light .is-free:hover,
+:root.light .is-free:focus-visible,
+:root.light .is-free.is-hovered,
+:root.light .is-occupied:hover,
+:root.light .is-occupied:focus-visible,
+:root.light .is-occupied.is-hovered,
+:root.light .is-reserved:hover,
+:root.light .is-reserved:focus-visible,
+:root.light .is-reserved.is-hovered,
+:root.light .is-maintenance:hover,
+:root.light .is-maintenance:focus-visible,
+:root.light .is-maintenance.is-hovered {
+  box-shadow: var(--status-light-hover-shadow);
 }
 
 .is-free .spot-indicator {

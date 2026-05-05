@@ -52,6 +52,25 @@ function getInitialTheme() {
 }
 
 /**
+ * Parses a single floor's data from Firebase snapshot.
+ * @param {Object} data - Raw Firebase data
+ * @param {string} floorPath - Firebase path key for the floor
+ * @param {Object} defaultSpots - Default spot configuration
+ * @param {Object} target - Target object to populate
+ * @returns {void}
+ */
+function parseFloor(data, floorPath, defaultSpots, target) {
+  if (data[floorPath]) {
+    Object.keys(defaultSpots).forEach(spot => {
+      const spotData = data[floorPath][spot];
+      target[spot] = (spotData && spotData.status !== undefined)
+        ? spotData.status
+        : SPOT_STATUS.FREE;
+    });
+  }
+}
+
+/**
  * Parses Firebase snapshot data into floor spot objects.
  * @param {DataSnapshot} snapshot - Firebase data snapshot
  * @returns {{bottomFloor: Object, topFloor: Object}} Parsed spot data
@@ -64,35 +83,9 @@ function parseFirebaseData(snapshot) {
   const topFloor = {};
 
   if (data) {
-    // Floor1 (A1-A4)
-    if (data[FIREBASE_PATHS.FLOOR_1]) {
-      Object.keys(FIREBASE_FLOOR1_SPOTS).forEach(spot => {
-        const spotData = data[FIREBASE_PATHS.FLOOR_1][spot];
-        bottomFloor[spot] = (spotData && spotData.status !== undefined)
-          ? spotData.status
-          : SPOT_STATUS.FREE;
-      });
-    }
-
-    // Floor2 (B1-B5)
-    if (data[FIREBASE_PATHS.FLOOR_2]) {
-      Object.keys(FIREBASE_FLOOR2_SPOTS).forEach(spot => {
-        const spotData = data[FIREBASE_PATHS.FLOOR_2][spot];
-        bottomFloor[spot] = (spotData && spotData.status !== undefined)
-          ? spotData.status
-          : SPOT_STATUS.FREE;
-      });
-    }
-
-    // Floor3 (C1-C5)
-    if (data[FIREBASE_PATHS.FLOOR_3]) {
-      Object.keys(FIREBASE_FLOOR3_SPOTS).forEach(spot => {
-        const spotData = data[FIREBASE_PATHS.FLOOR_3][spot];
-        topFloor[spot] = (spotData && spotData.status !== undefined)
-          ? spotData.status
-          : SPOT_STATUS.FREE;
-      });
-    }
+    parseFloor(data, FIREBASE_PATHS.FLOOR_1, FIREBASE_FLOOR1_SPOTS, bottomFloor);
+    parseFloor(data, FIREBASE_PATHS.FLOOR_2, FIREBASE_FLOOR2_SPOTS, bottomFloor);
+    parseFloor(data, FIREBASE_PATHS.FLOOR_3, FIREBASE_FLOOR3_SPOTS, topFloor);
   }
 
   return { bottomFloor, topFloor };

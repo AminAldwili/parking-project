@@ -45,7 +45,6 @@
             :spots-prop="floor2Spots"
             :aisle-x-percent="aisleXPercent"
             :active-spot-id="activeSpotId"
-            @floor-resize="handleFloorResize"
             @request-path="handleRequestPath"
           />
         </section>
@@ -126,7 +125,6 @@
             :spots-prop="floor1Spots"
             :aisle-x-percent="aisleXPercent"
             :active-spot-id="activeSpotId"
-            @floor-resize="handleFloorResize"
             @request-path="handleRequestPath"
           />
         </section>
@@ -148,9 +146,14 @@ import ParkingFloor from "@/components/ParkingFloor.vue";
 import PathDrawer from "@/components/PathDrawer.vue";
 import {
   AISLE_X_PERCENT,
+  FLOOR_CONFIG,
   PATH_TIMEOUT_MS,
-  SPOT_STATUS
+  SPOT_STATUS,
+  SPOT_SCROLL_DELAY_MS,
+  SPOT_STATUS_CHECK_DELAY_MS,
+  getFloorFromSpotId
 } from "@/constants";
+import { useResizeObserver, useWindowResize } from "@/composables/useElementSize";
 
 /**
  * Main parking layout component.
@@ -188,8 +191,7 @@ function buildYPositions(count) {
 
 const aisleXPercent = AISLE_X_PERCENT;
 
-const spotCount = 5;
-const yPositions = buildYPositions(spotCount);
+const yPositions = buildYPositions(FLOOR_CONFIG.SPOTS_PER_ROW);
 
 /**
  * Reactive spots array for floor 1 (A & B sections)
@@ -300,12 +302,6 @@ const rampRect = ref(null);
 const clearTimer = ref(null);
 
 /**
- * ResizeObserver for responsive calculations
- * @type {import('vue').Ref<ResizeObserver|null>}
- */
-const resizeObserver = ref(null);
-
-/**
  * Currently active/selected spot ID
  * @type {import('vue').Ref<string|null>}
  */
@@ -315,9 +311,8 @@ watch(activeSpotId, (newSpotId) => {
   if (!newSpotId) return;
 
   setTimeout(() => {
-    const prefix = newSpotId.charAt(0).toUpperCase();
-    const isTopFloor = prefix === "C";
-    const spots = isTopFloor ? floor2Spots : floor1Spots;
+    const floor = getFloorFromSpotId(newSpotId);
+    const spots = floor === 2 ? floor2Spots : floor1Spots;
     const spotData = spots.find(s => s.id === newSpotId);
 
     if (spotData && spotData.status !== SPOT_STATUS.RESERVED) {
@@ -328,7 +323,7 @@ watch(activeSpotId, (newSpotId) => {
       }
       activePath.value = null;
     }
-  }, 500);
+  }, SPOT_STATUS_CHECK_DELAY_MS);
 });
 
 function scrollToSpot(spotId) {
@@ -336,8 +331,7 @@ function scrollToSpot(spotId) {
 
   activeSpotId.value = spotId;
 
-  const prefix = spotId.charAt(0).toUpperCase();
-  const targetFloor = (prefix === "A" || prefix === "B") ? 1 : 2;
+  const targetFloor = getFloorFromSpotId(spotId);
 
   nextTick(() => {
     const floorBox = targetFloor === 1 ? firstFloorBox.value : secondFloorBox.value;
@@ -369,7 +363,7 @@ function scrollToSpot(spotId) {
         spotCenter: spotCenter,
         aisleXPercent: aisleXPercent
       });
-    }, 1000);
+    }, SPOT_SCROLL_DELAY_MS);
   });
 }
 
@@ -384,24 +378,6 @@ function updateContainerSize() {
   });
 }
 
-function handleFloorResize() {
-  // Floor width tracking removed - spot sizing now uses container width directly
-}
-
-/**
- * Window resize handler.
- * Updates all measurements on resize.
- * @returns {void}
- */
-function handleWindowResize() {
-  updateContainerSize();
-  updateRampRect();
-}
-
-/**
- * Updates ramp connector bounding rect.
- * @returns {void}
- */
 function updateRampRect() {
   nextTick(() => {
     const ramp = rampConnector.value;
@@ -468,27 +444,22 @@ function handleRequestPath(payload) {
 
 onMounted(() => {
   nextTick(() => {
-    const el = container.value;
-    if (el && window.ResizeObserver) {
-      resizeObserver.value = new ResizeObserver(() => {
-        updateContainerSize();
-        updateRampRect();
-      });
-      resizeObserver.value.observe(el);
-    }
     updateContainerSize();
     updateRampRect();
   });
+});
 
-  window.addEventListener("resize", handleWindowResize);
+useResizeObserver(container, () => {
+  updateContainerSize();
+  updateRampRect();
+});
+
+useWindowResize(() => {
+  updateContainerSize();
+  updateRampRect();
 });
 
 onUnmounted(() => {
-  window.removeEventListener("resize", handleWindowResize);
-  if (resizeObserver.value) {
-    resizeObserver.value.disconnect();
-    resizeObserver.value = null;
-  }
   if (clearTimer.value) clearTimeout(clearTimer.value);
 });
 </script>
